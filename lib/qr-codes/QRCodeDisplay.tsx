@@ -3,8 +3,7 @@
 import dynamic from 'next/dynamic';
 import { RefObject } from 'react';
 
-// Dynamically import QRCode to avoid SSR issues
-const QRCode = dynamic(() => import('react-qr-code'), {
+const QRCodeSVG = dynamic(() => import('qrcode.react').then(mod => ({ default: mod.QRCodeSVG })), {
   ssr: false,
   loading: () => (
     <div className="flex h-64 w-64 items-center justify-center">
@@ -105,7 +104,7 @@ export function QRCodeDisplay({
       className="relative z-10 mb-2 flex min-h-0 flex-1 flex-col items-center justify-center"
     >
       <QRCodeFrame>
-        <QRCode value={value} size={size} level="H" fgColor="#000000" bgColor="#FFFFFF" />
+        <QRCodeSVG value={value} size={size} level="H" fgColor="#000000" bgColor="#FFFFFF" />
       </QRCodeFrame>
 
       <QRCodeInstructions instructions={instructions} hint={hint} />

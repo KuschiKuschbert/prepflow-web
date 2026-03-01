@@ -60,3 +60,20 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLDivElement>(
 
   return { ref, isIntersecting };
 }
+
+/**
+ * Convenience wrapper returning a [ref, isVisible] tuple.
+ * Drop-in replacement for the former standalone useIsVisible hook.
+ */
+export function useIsVisible<T extends HTMLElement = HTMLElement>(options?: {
+  threshold?: number | number[];
+  rootMargin?: string;
+}): [React.RefObject<T | null>, boolean] {
+  const threshold =
+    typeof options?.threshold === 'number' ? options.threshold : (options?.threshold?.[0] ?? 0.1);
+  const { ref, isIntersecting } = useIntersectionObserver<T>({
+    threshold,
+    rootMargin: options?.rootMargin ?? '0px',
+  });
+  return [ref, isIntersecting];
+}

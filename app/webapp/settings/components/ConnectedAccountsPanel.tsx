@@ -6,7 +6,7 @@ import { useConfirm } from '@/hooks/useConfirm';
 import { logger } from '@/lib/logger';
 import { CheckCircle, Link as LinkIcon, Unlink } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useIsVisible } from '@/hooks/useIsVisible';
+import { useIsVisible } from '@/hooks/useIntersectionObserver';
 
 interface ConnectedAccount {
   provider: string;

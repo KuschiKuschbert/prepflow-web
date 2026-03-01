@@ -3,7 +3,7 @@
 import { Icon } from '@/components/ui/Icon';
 import { Toggle } from '@/components/ui/Toggle';
 import { useNotification } from '@/contexts/NotificationContext';
-import { useIsVisible } from '@/hooks/useIsVisible';
+import { useIsVisible } from '@/hooks/useIntersectionObserver';
 import { logger } from '@/lib/logger';
 import { Bell, Mail, Volume2, VolumeX } from 'lucide-react';
 import { useEffect, useState } from 'react';

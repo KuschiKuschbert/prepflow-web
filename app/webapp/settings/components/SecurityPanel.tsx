@@ -3,7 +3,7 @@
 import { Icon } from '@/components/ui/Icon';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useConfirm } from '@/hooks/useConfirm';
-import { useIsVisible } from '@/hooks/useIsVisible';
+import { useIsVisible } from '@/hooks/useIntersectionObserver';
 import { Shield } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
