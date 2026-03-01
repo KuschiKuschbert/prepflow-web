@@ -1,7 +1,7 @@
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { getAuthenticatedUserByEmail } from '@/lib/api-helpers/getAuthenticatedUserByEmail';
 import { parseAndValidate } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
-import { createSupabaseAdmin } from '@/lib/supabase';
 import { getAppError } from '@/lib/utils/error';
 import { NextRequest, NextResponse } from 'next/server';
 import { handleCreateCleaningArea } from './helpers/createCleaningAreaHandler';
@@ -10,33 +10,13 @@ import { handleCleaningAreaError } from './helpers/handleCleaningAreaError';
 import { updateCleaningAreaSchema } from './helpers/schemas';
 import { updateCleaningArea } from './helpers/updateCleaningArea';
 
-async function getAuthenticatedUser(request: NextRequest) {
-  const supabaseAdmin = createSupabaseAdmin();
-
-  // Use Auth0 helper (handles AUTH0_BYPASS_DEV and real sessions)
-  const { requireAuth } = await import('@/lib/auth0-api-helpers');
-  const authUser = await requireAuth(request);
-
-  // Get user_id from email
-  const { data: userData, error: userError } = await supabaseAdmin
-    .from('users')
-    .select('id')
-    .eq('email', authUser.email)
-    .single();
-
-  if (userError || !userData) {
-    throw ApiErrorHandler.createError('User not found', 'NOT_FOUND', 404);
-  }
-  return { userId: userData.id, supabase: supabaseAdmin };
-}
-
 /**
  * GET /api/cleaning-areas
  * Get all cleaning areas
  */
 export async function GET(request: NextRequest) {
   try {
-    const { userId, supabase } = await getAuthenticatedUser(request);
+    const { userId, supabaseAdmin: supabase } = await getAuthenticatedUserByEmail(request);
 
     const searchParams = request.nextUrl.searchParams;
     const page = Math.max(1, Number(searchParams.get('page')) || 1);
@@ -100,7 +80,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const { userId, supabase } = await getAuthenticatedUser(request);
+    const { userId, supabaseAdmin: supabase } = await getAuthenticatedUserByEmail(request);
     return handleCreateCleaningArea(supabase, request, userId);
   } catch (err) {
     if (err instanceof NextResponse) return err;
@@ -119,7 +99,7 @@ export async function POST(request: NextRequest) {
  */
 export async function PUT(request: NextRequest) {
   try {
-    const { userId, supabase } = await getAuthenticatedUser(request);
+    const { userId, supabaseAdmin: supabase } = await getAuthenticatedUserByEmail(request);
 
     const parsed = await parseAndValidate(request, updateCleaningAreaSchema, '[CleaningAreas]');
     if (!parsed.ok) return parsed.response;
@@ -163,7 +143,7 @@ export async function PUT(request: NextRequest) {
  */
 export async function DELETE(request: NextRequest) {
   try {
-    const { userId, supabase } = await getAuthenticatedUser(request);
+    const { userId, supabaseAdmin: supabase } = await getAuthenticatedUserByEmail(request);
     return handleDeleteCleaningArea(supabase, request, userId);
   } catch (err) {
     if (err instanceof NextResponse) return err;

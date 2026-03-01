@@ -1,38 +1,10 @@
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { getAuthenticatedUserByEmail } from '@/lib/api-helpers/getAuthenticatedUserByEmail';
 import { parseAndValidate } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
-import { createSupabaseAdmin } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import { createQualificationWithUser } from './helpers/createQualification';
 import { createQualificationSchema, QUALIFICATION_SELECT } from './helpers/schemas';
-
-async function getAuthenticatedUser(request: NextRequest) {
-  const supabaseAdmin = createSupabaseAdmin();
-
-  // Authenticate user
-  const {
-    data: { user },
-    error: authError,
-  } = await supabaseAdmin.auth.getUser(
-    request.headers.get('Authorization')?.replace('Bearer ', '') || '',
-  );
-
-  // Fallback/Use Auth0 helper
-  const { requireAuth } = await import('@/lib/auth0-api-helpers');
-  const authUser = await requireAuth(request);
-
-  // Get user_id from email
-  const { data: userData, error: userError } = await supabaseAdmin
-    .from('users')
-    .select('id')
-    .eq('email', authUser.email)
-    .single();
-
-  if (userError || !userData) {
-    throw ApiErrorHandler.createError('User not found', 'NOT_FOUND', 404);
-  }
-  return { userId: userData.id, supabase: supabaseAdmin };
-}
 
 /**
  * GET /api/employees/[id]/qualifications
@@ -42,7 +14,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
   try {
     const { id } = await context.params;
 
-    const { userId, supabase } = await getAuthenticatedUser(request);
+    const { userId, supabaseAdmin: supabase } = await getAuthenticatedUserByEmail(request);
 
     // Filter by user_id and employee_id to ensure ownership
     const { data, error: fetchError } = await supabase
@@ -107,7 +79,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
-    const { userId, supabase } = await getAuthenticatedUser(request);
+    const { userId, supabaseAdmin: supabase } = await getAuthenticatedUserByEmail(request);
 
     const parsed = await parseAndValidate(
       request,
