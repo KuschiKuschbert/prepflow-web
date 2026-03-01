@@ -10,6 +10,7 @@ import type { ErrorContext } from './logEntry';
  */
 export function reportToSentry(error: Error | string, context?: ErrorContext): void {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const Sentry = require('@sentry/nextjs') as typeof import('@sentry/nextjs');
     if (!Sentry || typeof Sentry.captureException !== 'function') return;
 
@@ -31,6 +32,7 @@ export function reportToSentry(error: Error | string, context?: ErrorContext): v
  */
 export function addSentryBreadcrumb(message: string, context?: ErrorContext | unknown): void {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const Sentry = require('@sentry/nextjs') as typeof import('@sentry/nextjs');
     if (!Sentry || typeof Sentry.addBreadcrumb !== 'function') return;
     Sentry.addBreadcrumb({
