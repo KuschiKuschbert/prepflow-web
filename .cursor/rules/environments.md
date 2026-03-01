@@ -1,3 +1,8 @@
+---
+description: Environment variables, dev/staging/prod differences, feature flags
+globs: .env*, env.example, vercel.json
+---
+
 # Environments — Env Vars, Dev/Staging/Prod Differences & Feature Flags
 
 ## Environment Files

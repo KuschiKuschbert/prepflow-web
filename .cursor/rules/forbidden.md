@@ -1,3 +1,8 @@
+---
+description: Anti-patterns and forbidden patterns - what NOT to do in this codebase
+globs: app/**, lib/**, components/**
+---
+
 # Forbidden — Anti-Patterns Never to Generate
 
 These patterns were found in the codebase or are explicitly prohibited by project standards. Never generate them.
@@ -163,14 +168,14 @@ import { MyComponent } from '@/app/webapp/components/MyComponent';
 
 ---
 
-## ❌ Never Modify app/curbos/ or app/nachotaco/
+## ❌ Never Modify app/curbos/ or app/curbos-import/
 
 ```bash
 # ❌ FORBIDDEN — pre-commit hook blocks this
 # Editing app/curbos/components/LatestVersionBadge.tsx
 ```
 
-`app/curbos/` requires `ALLOW_CURBOS_MODIFY=1` bypass. `app/nachotaco/` is excluded from all tooling and must never be modified.
+Both `app/curbos/` and `app/curbos-import/` require `ALLOW_CURBOS_MODIFY=1` bypass. These directories are excluded from all tooling (lint, typecheck, prettier, cleanup).
 
 ---
 

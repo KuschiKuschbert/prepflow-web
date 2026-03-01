@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+description: Autonomous developer intelligence modules - code review, refactoring, testing, documentation, performance analysis scripts
+globs: scripts/autonomous-developer/**, scripts/error-learning/**, docs/autonomous-developer/**
 ---
 
 # Autonomous Developer System
@@ -17,11 +18,13 @@ The autonomous developer system provides 10 intelligence modules that work toget
 **Purpose:** Automated code review with pattern detection, code smell identification, and best practice suggestions.
 
 **Usage:**
+
 ```bash
 npm run dev:code-review <file>
 ```
 
 **Capabilities:**
+
 - Detects architectural patterns (Singleton, Factory, Repository, etc.)
 - Identifies code smells (long methods, deep nesting, duplicate code, magic numbers, god objects)
 - Suggests best practices based on learned error patterns
@@ -34,11 +37,13 @@ npm run dev:code-review <file>
 **Purpose:** Tracks technical debt and suggests refactoring opportunities.
 
 **Usage:**
+
 ```bash
 npm run dev:refactoring <file>
 ```
 
 **Capabilities:**
+
 - Detects refactoring opportunities (extract function, simplify conditional, remove duplication)
 - Tracks technical debt with priority scoring
 - Analyzes code complexity (cyclomatic complexity, nesting, duplication)
@@ -51,12 +56,14 @@ npm run dev:refactoring <file>
 **Purpose:** Generates test cases from error patterns and detects coverage gaps.
 
 **Usage:**
+
 ```bash
 npm run dev:generate-tests from-errors <error-id1> [error-id2] ...
 npm run dev:generate-tests coverage <source-files> <test-files>
 ```
 
 **Capabilities:**
+
 - Generates regression tests from fixed errors
 - Detects test coverage gaps
 - Suggests missing test cases
@@ -69,6 +76,7 @@ npm run dev:generate-tests coverage <source-files> <test-files>
 **Purpose:** Auto-generates and maintains documentation.
 
 **Usage:**
+
 ```bash
 npm run dev:generate-docs analyze <file>
 npm run dev:generate-docs generate <file> --auto-fix
@@ -76,6 +84,7 @@ npm run dev:generate-docs readme <file>
 ```
 
 **Capabilities:**
+
 - Detects missing JSDoc comments
 - Identifies outdated documentation
 - Auto-generates JSDoc from code analysis
@@ -88,6 +97,7 @@ npm run dev:generate-docs readme <file>
 **Purpose:** Detects performance regressions and optimization opportunities.
 
 **Usage:**
+
 ```bash
 npm run dev:performance file <file>
 npm run dev:performance bundle [path]
@@ -95,6 +105,7 @@ npm run dev:performance record
 ```
 
 **Capabilities:**
+
 - Detects N+1 query patterns
 - Identifies memory leaks
 - Suggests render optimizations
@@ -108,12 +119,14 @@ npm run dev:performance record
 **Purpose:** Detects design patterns, anti-patterns, and generates ADRs.
 
 **Usage:**
+
 ```bash
 npm run dev:architecture analyze <file> [--generate-adr]
 npm run dev:architecture list
 ```
 
 **Capabilities:**
+
 - Detects design patterns (Singleton, Factory, Repository, Strategy, Observer)
 - Identifies anti-patterns (God Object, Spaghetti Code, Magic Numbers, Copy-Paste)
 - Generates Architecture Decision Records (ADRs)
@@ -126,11 +139,13 @@ npm run dev:architecture list
 **Purpose:** Predicts bugs before they happen and assesses code health.
 
 **Usage:**
+
 ```bash
 npm run dev:predict <file>
 ```
 
 **Capabilities:**
+
 - Predicts likely bugs based on learned patterns
 - Calculates risk scores and code health metrics
 - Suggests preventive refactoring
@@ -143,6 +158,7 @@ npm run dev:predict <file>
 **Purpose:** Learns from dependency issues and tracks health.
 
 **Usage:**
+
 ```bash
 npm run dev:dependencies health <package>
 npm run dev:dependencies upgrades
@@ -151,6 +167,7 @@ npm run dev:dependencies learn <package> <error> <error-id>
 ```
 
 **Capabilities:**
+
 - Analyzes dependency health scores
 - Predicts breaking changes from upgrade history
 - Detects unused dependencies
@@ -164,6 +181,7 @@ npm run dev:dependencies learn <package> <error> <error-id>
 **Purpose:** Generates PR descriptions, commit messages, and changelog entries.
 
 **Usage:**
+
 ```bash
 npm run dev:pr pr [base-branch]
 npm run dev:pr commit [files...]
@@ -171,6 +189,7 @@ npm run dev:pr changelog
 ```
 
 **Capabilities:**
+
 - Auto-generates PR descriptions from git diff
 - Suggests commit messages based on changes
 - Generates changelog entries from commits
@@ -183,6 +202,7 @@ npm run dev:pr changelog
 **Purpose:** Learns from user behavior and adapts suggestions.
 
 **Usage:**
+
 ```bash
 npm run dev:learn record <action> <suggestion> [key=value...]
 npm run dev:learn learn
@@ -192,6 +212,7 @@ npm run dev:learn style
 ```
 
 **Capabilities:**
+
 - Records user behavior (accepted/rejected suggestions)
 - Learns coding style preferences
 - Adapts suggestions based on context (time of day, project phase)
@@ -202,11 +223,13 @@ npm run dev:learn style
 ## Comprehensive Analysis
 
 **Usage:**
+
 ```bash
 npm run dev:analyze <file>
 ```
 
 Runs all intelligence modules on a file and generates a comprehensive report including:
+
 - Code review issues
 - Refactoring opportunities
 - Testing gaps
@@ -219,6 +242,7 @@ Runs all intelligence modules on a file and generates a comprehensive report inc
 ## Integration with Error Learning
 
 All intelligence modules leverage the error learning system:
+
 - **Code Review:** Uses learned error patterns to suggest fixes
 - **Refactoring:** Prioritizes debt based on error-causing patterns
 - **Testing:** Generates tests from error patterns
@@ -245,11 +269,13 @@ docs/autonomous-developer/
 ## Agent Integration
 
 The autonomous developer system is automatically available to the agent through:
+
 - `.cursor/rules/error-patterns.mdc` - Learned error patterns
 - `.cursor/rules/autonomous-developer.mdc` - This file (all capabilities)
 - Knowledge bases in `docs/autonomous-developer/`
 
 The agent can:
+
 - Reference learned patterns when reviewing code
 - Use predictive intelligence to prevent bugs
 - Apply contextual learning to adapt suggestions
@@ -259,31 +285,37 @@ The agent can:
 ## Usage Examples
 
 ### Comprehensive File Analysis
+
 ```bash
 npm run dev:analyze app/api/route.ts
 ```
 
 ### Code Review Before Commit
+
 ```bash
 npm run dev:code-review app/api/route.ts
 ```
 
 ### Predict Bugs Proactively
+
 ```bash
 npm run dev:predict app/components/MyComponent.tsx
 ```
 
 ### Generate Tests from Errors
+
 ```bash
 npm run dev:generate-tests from-errors error-123 error-456
 ```
 
 ### Check Performance
+
 ```bash
 npm run dev:performance file app/api/route.ts
 ```
 
 ### Generate PR Description
+
 ```bash
 npm run dev:pr pr main
 ```
@@ -300,6 +332,7 @@ npm run dev:pr pr main
 ## Continuous Learning
 
 The system continuously learns from:
+
 - Error fixes and patterns
 - User behavior (accepted/rejected suggestions)
 - Code review feedback

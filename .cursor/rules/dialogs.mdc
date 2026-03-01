@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+description: Dialog component standards, PrepFlow voice guidelines, accessibility requirements, useConfirm/usePrompt/useAlert hooks
+globs: components/ui/*Dialog*, components/ui/ConfirmDialog*, components/ui/InputDialog*, hooks/useConfirm*, hooks/usePrompt*, hooks/useAlert*
 ---
 
 ## Dialog Standards & Usage Guidelines
@@ -17,11 +18,13 @@ PrepFlow uses standardized Cyber Carrot Design System dialog components with Pre
 **Purpose:** Confirmation dialogs for user actions (delete, disconnect, etc.)
 
 **Variants:**
+
 - `danger` - Destructive actions (delete, remove) - uses `AlertTriangle` icon
 - `warning` - Potentially destructive actions (disconnect, disable) - uses `AlertCircle` icon
 - `info` - Informational confirmations (populate data, save changes) - uses `Info` icon
 
 **Props:**
+
 - `isOpen: boolean` - Whether dialog is open
 - `title: string` - Dialog title
 - `message: string` - Dialog message (use PrepFlow voice)
@@ -32,6 +35,7 @@ PrepFlow uses standardized Cyber Carrot Design System dialog components with Pre
 - `variant?: 'danger' | 'warning' | 'info'` - Dialog variant (default: "warning")
 
 **Accessibility:**
+
 - Focus trap (Tab/Shift+Tab loops within dialog)
 - Escape key closes dialog
 - Focus returns to trigger element on close
@@ -44,6 +48,7 @@ PrepFlow uses standardized Cyber Carrot Design System dialog components with Pre
 **Purpose:** Input dialogs for user text/number input
 
 **Props:**
+
 - `isOpen: boolean` - Whether dialog is open
 - `title: string` - Dialog title
 - `message: string` - Dialog message (use PrepFlow voice)
@@ -60,6 +65,7 @@ PrepFlow uses standardized Cyber Carrot Design System dialog components with Pre
 - `validation?: (value: string) => string | null` - Validation function (returns error message or null)
 
 **Accessibility:**
+
 - Focus trap (Tab/Shift+Tab loops within dialog)
 - Escape key closes dialog
 - Enter key confirms (submits form)
@@ -76,27 +82,30 @@ PrepFlow uses standardized Cyber Carrot Design System dialog components with Pre
 **Purpose:** Promise-based confirmation dialogs
 
 **API:**
+
 ```typescript
 const { showConfirm, ConfirmDialog } = useConfirm();
 
 // Usage:
 const confirmed = await showConfirm({
   title: 'Delete Ingredient',
-  message: 'Are you sure? This can\'t be undone.',
+  message: "Are you sure? This can't be undone.",
   variant: 'danger',
   confirmLabel: 'Delete',
-  cancelLabel: 'Cancel'
+  cancelLabel: 'Cancel',
 });
 // Returns true if confirmed, false if cancelled
 ```
 
 **Features:**
+
 - Promise-based API (returns `Promise<boolean>`)
 - Automatic dialog state management
 - Supports all ConfirmDialog variants (danger, warning, info)
 - Returns dialog component to render
 
 **Usage Pattern:**
+
 ```typescript
 'use client';
 
@@ -136,6 +145,7 @@ export function MyComponent() {
 **Purpose:** Promise-based input dialogs
 
 **API:**
+
 ```typescript
 const { showPrompt, InputDialog } = usePrompt();
 
@@ -145,18 +155,20 @@ const recipeName = await showPrompt({
   message: 'What should we call this recipe?',
   placeholder: 'Recipe name',
   type: 'text',
-  validation: (v) => v.length > 0 ? null : 'Recipe name is required'
+  validation: v => (v.length > 0 ? null : 'Recipe name is required'),
 });
 // Returns string value or null if cancelled
 ```
 
 **Features:**
+
 - Promise-based API (returns `Promise<string | null>`)
 - Automatic dialog state management
 - Built-in validation support
 - Returns dialog component to render
 
 **Usage Pattern:**
+
 ```typescript
 'use client';
 
@@ -196,6 +208,7 @@ export function MyComponent() {
 **Purpose:** Promise-based alert dialogs
 
 **API:**
+
 ```typescript
 const { showAlert, AlertDialog } = useAlert();
 
@@ -203,18 +216,20 @@ const { showAlert, AlertDialog } = useAlert();
 await showAlert({
   title: 'Success!',
   message: 'All ingredients saved successfully.',
-  variant: 'info'
+  variant: 'info',
 });
 // Returns void (just shows the message)
 ```
 
 **Features:**
+
 - Promise-based API (returns `Promise<void>`)
 - Single "OK" button (no decisions needed)
 - Uses ConfirmDialog with info variant (reuse what we've got)
 - Returns dialog component to render
 
 **Usage Pattern:**
+
 ```typescript
 'use client';
 
@@ -245,6 +260,7 @@ export function MyComponent() {
 **Tone:** Professional but friendly, kitchen-themed metaphors when appropriate, clear and direct.
 
 **Do:**
+
 - Use kitchen/chef metaphors naturally ("start fresh", "all the trimmings", "can't undo this one")
 - Be clear about consequences ("All temperature logs go with it", "All dishes will be unassigned")
 - Keep it concise but informative
@@ -253,6 +269,7 @@ export function MyComponent() {
 - Reference the action clearly ("Delete this equipment?", "Disconnect Google Drive?")
 
 **Don't:**
+
 - Overuse emojis (we're professional, not a text message)
 - Be overly casual ("yo", "dude", etc.)
 - Make jokes at the user's expense
@@ -261,6 +278,7 @@ export function MyComponent() {
 - Be overly dramatic ("⚠️ DANGER! ⚠️")
 
 **Examples:**
+
 - ✅ "Delete this ingredient? This action can't be undone. Last chance to back out."
 - ✅ "Disconnect Google Drive? You'll need to reconnect if you want to upload backups later."
 - ✅ "That's not a valid percentage. Give me something between 0 and 100, chef."
@@ -269,6 +287,7 @@ export function MyComponent() {
 - ❌ "This operation will permanently remove the selected entity from the database." (too technical)
 
 **See Also:**
+
 - `docs/VOICE_ENHANCEMENT_GUIDE.md` - Comprehensive voice enhancement guide with examples for dialogs, dropdowns, and input fields (MANDATORY for all new code)
 
 ### When to Use Which Hook
@@ -294,21 +313,25 @@ export function MyComponent() {
 **MANDATORY:** All dialogs must meet WCAG 2.1 AA standards.
 
 **Focus Trap:**
+
 - Tab/Shift+Tab loops within dialog (can't escape until you decide)
 - First focusable element receives focus when dialog opens
 - Last focusable element wraps to first on Tab
 - First focusable element wraps to last on Shift+Tab
 
 **Keyboard Navigation:**
+
 - **Escape:** Closes dialog (all dialog types)
 - **Enter:** Confirms action (InputDialog only)
 - **Tab/Shift+Tab:** Moves focus within dialog (trapped)
 
 **Focus Return:**
+
 - Returns focus to trigger element when dialog closes
 - Prevents focus loss and maintains user context
 
 **ARIA Labels:**
+
 - `role="dialog"` - Identifies dialog element
 - `aria-modal="true"` - Indicates modal behavior
 - `aria-labelledby` - References title element
@@ -316,6 +339,7 @@ export function MyComponent() {
 - `aria-invalid` - Indicates validation errors (InputDialog)
 
 **Screen Reader Support:**
+
 - Proper labels and descriptions for all interactive elements
 - Error messages announced via `role="alert"`
 - Status updates announced via `aria-live` regions
@@ -323,10 +347,12 @@ export function MyComponent() {
 ### Z-Index Hierarchy
 
 **Dialog Layering:**
+
 - **Modals/Dialogs:** `z-[80]` - Highest priority overlays (nothing should cover these)
 - **Backdrop:** `z-[79]` - Behind dialog, above content (blocks interaction)
 
 **Implementation:**
+
 ```typescript
 // Dialog container
 <div className="fixed inset-0 z-[80] flex items-center justify-center">
@@ -343,26 +369,31 @@ export function MyComponent() {
 ### Cyber Carrot Styling
 
 **Dialog Container:**
+
 - Border radius: `rounded-3xl` (soft and friendly)
 - Background: `bg-[#1f1f1f]` with `border border-[#2a2a2a]` (matches dark theme)
 - Padding: `p-4 desktop:p-6` (responsive spacing)
 - Max width: `max-w-md` (comfortable reading width)
 
 **Backdrop:**
+
 - Background: `bg-black/60 backdrop-blur-sm` (subtle but effective)
 - Click to close: Backdrop click closes dialog (optional, configurable)
 
 **Buttons:**
+
 - Primary: Cyber Carrot gradient (`from-[#29E7CD] to-[#D925C7]`) for confirm actions
 - Secondary: `bg-[#2a2a2a]/40` with `border border-[#2a2a2a]` for cancel actions
 - Focus ring: `focus:ring-2 focus:ring-[#29E7CD]` (visible focus indicators)
 
 **Icons:**
+
 - Use Lucide React icons via `Icon` component (no inline SVG)
 - Sizes: `xl` (48px) for dialog icons
 - Colors: Match variant (danger=red, warning=yellow, info=cyan)
 
 **Typography:**
+
 - Title: `text-fluid-xl` (Cyber Carrot text hierarchy)
 - Message: `text-fluid-sm` (readable but not overwhelming)
 - Colors: `text-white` for titles, `text-gray-300` for messages
@@ -370,11 +401,13 @@ export function MyComponent() {
 ### Migration from Native Dialogs
 
 **NEVER use native browser dialogs:**
+
 - ❌ `confirm()` - Use `useConfirm` hook instead
 - ❌ `prompt()` - Use `usePrompt` hook instead
 - ❌ `alert()` - Use `useAlert` hook instead
 
 **Migration Pattern:**
+
 ```typescript
 // Before (native dialog):
 if (confirm('Are you sure?')) {
@@ -407,6 +440,7 @@ return (
 ### Testing Checklist
 
 **Accessibility Testing:**
+
 - [ ] Focus trap works (Tab loops within dialog, can't escape)
 - [ ] Escape key closes dialog
 - [ ] Focus returns to trigger element on close
@@ -415,6 +449,7 @@ return (
 - [ ] ARIA labels are present and correct
 
 **Visual Testing:**
+
 - [ ] Z-index layering correct (no clipping behind other elements)
 - [ ] Cyber Carrot styling consistent (looks good, feels good)
 - [ ] Icons use Icon component with Lucide icons (no inline SVG)
@@ -422,12 +457,14 @@ return (
 - [ ] Mobile touch interactions work (tap outside to close, etc.)
 
 **Functional Testing:**
+
 - [ ] All dialogs use standardized components (no more browser dialogs)
 - [ ] PrepFlow voice is consistent across all dialogs (sounds like PrepFlow, not a robot)
 - [ ] Validation works correctly (InputDialog with validation function)
 - [ ] Error messages display correctly (InputDialog validation errors)
 
 **Verification:**
+
 - [ ] No native browser dialogs remain (grep for `confirm|alert|prompt` should return nothing)
 
 ### Related Documentation

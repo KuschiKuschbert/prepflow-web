@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+description: Security standards - input validation, Supabase query safety, auth patterns, API security, secrets management, CSRF/XSS prevention
+globs: app/api/**, lib/**, proxy.ts, middleware.ts
 ---
 
 ## 🔒 **Security Standards & Best Practices**
@@ -25,8 +26,8 @@ const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
 
   // Auth0 (see docs/AUTH0_STRIPE_REFERENCE.md for complete list)
-  NEXTAUTH_SECRET: z.string().min(32),
-  NEXTAUTH_URL: z.string().url(),
+  AUTH0_SECRET: z.string().min(32),
+  AUTH0_BASE_URL: z.string().url(),
   AUTH0_ISSUER_BASE_URL: z.string().url().optional(),
   AUTH0_CLIENT_ID: z.string().optional(),
   AUTH0_CLIENT_SECRET: z.string().optional(),
@@ -66,8 +67,8 @@ export const env = envSchema.parse(process.env);
 
 ```bash
 # Generate secure random secrets
-openssl rand -hex 32  # For NEXTAUTH_SECRET
-openssl rand -base64 32  # For AUTH0_SECRET
+openssl rand -hex 32   # For AUTH0_SECRET
+openssl rand -base64 32  # Alternative format
 ```
 
 **Secret Rotation Process:**
@@ -110,11 +111,12 @@ openssl rand -base64 32  # For AUTH0_SECRET
 
 **CSRF Protection:**
 
-- **MANDATORY:** Use NextAuth CSRF tokens for authenticated requests
+- **MANDATORY:** Use Auth0 SDK session cookies for authenticated requests (handled automatically)
 - **Verify origin headers** for API requests
 - **Use SameSite cookies** for session management
 
 **See Also:**
+
 - `security.mdc` (Database Query Security Patterns) - Secure database query patterns
 - `security.mdc` (Input Sanitization & Validation Standards) - Input validation requirements
 
@@ -132,40 +134,34 @@ const { data, error } = await supabase
   .from('recipes')
   .select('*')
   .eq('id', recipeId) // Parameterized automatically
-  .like('name', `%${searchTerm}%`) // Handles escaping
+  .like('name', `%${searchTerm}%`); // Handles escaping
 
 // ✅ SAFE: Use .in() with array
-const { data, error } = await supabase
-  .from('ingredients')
-  .select('*')
-  .in('id', ingredientIds) // Array is safely parameterized
+const { data, error } = await supabase.from('ingredients').select('*').in('id', ingredientIds); // Array is safely parameterized
 
 // ✅ SAFE: Use .ilike() with proper escaping
-const { data, error } = await supabase
-  .from('recipes')
-  .select('*')
-  .ilike('name', `%${searchTerm}%`) // Supabase handles escaping
+const { data, error } = await supabase.from('recipes').select('*').ilike('name', `%${searchTerm}%`); // Supabase handles escaping
 
 // ✅ SAFE: Filter objects
 const { data, error } = await supabase
   .from('recipes')
   .select('*')
-  .filter('name', 'ilike', `%${searchTerm}%`) // Explicit filter method
+  .filter('name', 'ilike', `%${searchTerm}%`); // Explicit filter method
 ```
 
 **Unsafe Patterns (❌ NEVER Use These):**
 
 ```typescript
 // ❌ UNSAFE: String interpolation in .or() clause
-query.or(`name.ilike.%${userInput}%,email.ilike.%${userInput}%`)
+query.or(`name.ilike.%${userInput}%,email.ilike.%${userInput}%`);
 // Problem: While Supabase escapes values, string interpolation is error-prone
 
 // ❌ UNSAFE: Raw SQL with user input
-await supabase.rpc('custom_function', { query: userInput })
+await supabase.rpc('custom_function', { query: userInput });
 // Problem: If function uses string concatenation, vulnerable to SQL injection
 
 // ❌ UNSAFE: Direct value insertion without validation
-await supabase.from('table').insert({ name: userInput })
+await supabase.from('table').insert({ name: userInput });
 // Problem: Should validate and sanitize userInput first
 ```
 
@@ -220,7 +216,7 @@ export function escapeSearchTerm(term: string): string {
   return term
     .trim()
     .slice(0, 200)
-    .replace(/[\\%_]/g, (char) => `\\${char}`); // Escape backslash, %, _
+    .replace(/[\\%_]/g, char => `\\${char}`); // Escape backslash, %, _
 }
 ```
 
@@ -264,10 +260,10 @@ export async function GET(request: NextRequest) {
 // lib/utils/query-timeout.ts
 export async function withQueryTimeout<T>(
   promise: Promise<T>,
-  timeoutMs: number = 10000
+  timeoutMs: number = 10000,
 ): Promise<T> {
   const timeout = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error('Query timeout')), timeoutMs)
+    setTimeout(() => reject(new Error('Query timeout')), timeoutMs),
   );
 
   return Promise.race([promise, timeout]);
@@ -276,7 +272,7 @@ export async function withQueryTimeout<T>(
 // Usage:
 const { data, error } = await withQueryTimeout(
   supabase.from('recipes').select('*'),
-  5000 // 5 second timeout
+  5000, // 5 second timeout
 );
 ```
 
@@ -322,6 +318,7 @@ const supabase = createClient(...); // Don't do this in route handlers
 #### **Query Security Checklist**
 
 For every database query, verify:
+
 - [ ] User input is validated before use
 - [ ] User input is sanitized (search terms, filters)
 - [ ] Supabase query builder methods are used (no raw SQL)
@@ -333,6 +330,7 @@ For every database query, verify:
 - [ ] Queries are paginated (for large datasets)
 
 **See Also:**
+
 - `security.mdc` (Input Sanitization & Validation Standards) - Comprehensive input validation patterns
 - `core.mdc` (Supabase TypeScript Gotcha) - Query builder patterns
 
@@ -407,18 +405,21 @@ eval(userInput);
 // lib/utils/validate-url.ts
 import { z } from 'zod';
 
-const urlSchema = z.string().url().refine(
-  (url) => {
-    try {
-      const parsed = new URL(url);
-      // Only allow http/https protocols
-      return ['http:', 'https:'].includes(parsed.protocol);
-    } catch {
-      return false;
-    }
-  },
-  { message: 'Invalid URL protocol' }
-);
+const urlSchema = z
+  .string()
+  .url()
+  .refine(
+    url => {
+      try {
+        const parsed = new URL(url);
+        // Only allow http/https protocols
+        return ['http:', 'https:'].includes(parsed.protocol);
+      } catch {
+        return false;
+      }
+    },
+    { message: 'Invalid URL protocol' },
+  );
 
 export function validateURL(url: string): boolean {
   return urlSchema.safeParse(url).success;
@@ -431,6 +432,7 @@ if (!validateURL(userProvidedURL)) {
 ```
 
 **Example Implementation:**
+
 - `app/api/image-proxy/route.ts` - Demonstrates comprehensive URL validation: URL format validation, protocol validation (HTTP/HTTPS only), domain whitelisting, URL decoding with error handling
 
 #### **File Upload Security**
@@ -486,6 +488,7 @@ const { name } = schema.parse(await request.json());
 #### **Input Sanitization Checklist**
 
 For every user input, verify:
+
 - [ ] Input is validated with Zod schema
 - [ ] Input is sanitized (if needed for display)
 - [ ] Input length is limited
@@ -496,6 +499,7 @@ For every user input, verify:
 - [ ] File uploads are validated (type, size, name)
 
 **See Also:**
+
 - `security.mdc` (Database Query Security Patterns) - Query parameter validation
 - `security.mdc` (API Security) - API input validation requirements
 
@@ -506,8 +510,8 @@ For every user input, verify:
 **Session Management:**
 
 - **Secure cookies** with `httpOnly`, `secure`, `sameSite: 'strict'`
-- **Session timeout:** 4 hours (configurable via `NEXTAUTH_SESSION_MAX_AGE`)
-- **Token refresh:** Automatic via NextAuth
+- **Session timeout:** 4 hours inactivity / 24 hours absolute (configured in Auth0 SDK)
+- **Token refresh:** Automatic via Auth0 SDK session management
 - **Logout:** Clear all session data server-side
 - **JWT Strategy:** Stateless authentication (no database lookups for session validation)
 
@@ -629,9 +633,10 @@ For every new API endpoint:
 - [ ] Logging (security events logged)
 - [ ] SQL injection prevention (parameterized queries)
 - [ ] XSS prevention (sanitized output)
-- [ ] CSRF protection (NextAuth tokens)
+- [ ] CSRF protection (Auth0 SDK session cookies, SameSite enforced)
 
 **For Stripe Webhook Endpoints:**
+
 - [ ] Webhook signature verification (MANDATORY - see `docs/AUTH0_STRIPE_REFERENCE.md`)
 - [ ] Idempotency checking (via `webhook_events` table)
 - [ ] Environment-specific secrets (DEV/PROD)
@@ -658,183 +663,31 @@ For every new API endpoint:
 - [ ] SQL injection prevention verified
 - [ ] XSS prevention verified
 
-### **Security Hardening Patterns**
+### **Security Hardening Checklist**
 
-**MANDATORY:** Apply these security hardening patterns throughout the codebase.
+For every security-sensitive operation:
 
-#### **Content Security Policy (CSP) Hardening**
-
-**RECOMMENDED:** Implement strict CSP with nonce-based inline scripts:
-
-```typescript
-// proxy.ts or next.config.ts
-const nonce = Buffer.from(crypto.randomBytes(16)).toString('base64');
-
-// In headers:
-{
-  key: 'Content-Security-Policy',
-  value: `
-    default-src 'self';
-    script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com;
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    img-src 'self' data: https:;
-    connect-src 'self' https://*.supabase.co;
-    font-src 'self' https://fonts.gstatic.com;
-  `.replace(/\s+/g, ' ').trim()
-}
-```
-
-#### **HTTP Security Headers**
-
-**MANDATORY:** Include all security headers (see Security Headers section for full list):
-
-- X-Frame-Options: DENY
-- X-Content-Type-Options: nosniff
-- X-XSS-Protection: 1; mode=block
-- Strict-Transport-Security: max-age=31536000
-- Content-Security-Policy: (configured per application)
-- Referrer-Policy: origin-when-cross-origin
-- Permissions-Policy: (restrictive)
-- Cross-Origin-Embedder-Policy: require-corp
-- Cross-Origin-Opener-Policy: same-origin
-- Cross-Origin-Resource-Policy: same-origin
-
-#### **Rate Limiting Hardening**
-
-**RECOMMENDED:** Implement progressive rate limiting:
-
-```typescript
-// lib/rate-limit.ts (enhanced)
-interface RateLimitConfig {
-  windowMs: number;
-  maxRequests: number;
-  blockDuration?: number; // Block IP after exceeding limit
-}
-
-// Progressive rate limiting
-const RATE_LIMITS: Record<string, RateLimitConfig> = {
-  '/api/auth/login': {
-    windowMs: 15 * 60 * 1000,
-    maxRequests: 5,
-    blockDuration: 30 * 60 * 1000, // Block for 30 minutes
-  },
-  '/api/auth/register': {
-    windowMs: 60 * 60 * 1000,
-    maxRequests: 3,
-    blockDuration: 60 * 60 * 1000, // Block for 1 hour
-  },
-};
-```
-
-#### **Session Security Hardening**
-
-**MANDATORY:** Implement secure session management:
-
-```typescript
-// Session configuration
-const sessionConfig = {
-  httpOnly: true, // Prevent XSS access
-  secure: process.env.NODE_ENV === 'production', // HTTPS only
-  sameSite: 'strict' as const, // CSRF protection
-  maxAge: 4 * 60 * 60, // 4 hours
-  path: '/',
-};
-```
-
-#### **API Key Security**
-
-**MANDATORY:** Secure API key handling:
-
-```typescript
-// ✅ GOOD: Environment variables
-const apiKey = process.env.SECRET_API_KEY;
-
-// ✅ GOOD: Validate API key format
-function validateApiKey(key: string): boolean {
-  return /^[a-zA-Z0-9]{32,}$/.test(key);
-}
-
-// ❌ BAD: Hardcoded keys
-const apiKey = 'hardcoded-key-123';
-
-// ❌ BAD: Exposed in client code
-const apiKey = process.env.NEXT_PUBLIC_API_KEY; // Don't use NEXT_PUBLIC_ for secrets
-```
-
-#### **Logging Security**
-
-**MANDATORY:** Never log sensitive information:
-
-```typescript
-// ✅ GOOD: Sanitized logging
-logger.info('User action', {
-  userId: user.id,
-  action: 'login',
-  // Never log: passwords, tokens, PII
-});
-
-// ❌ BAD: Logging sensitive data
-logger.info('User login', {
-  email: user.email,
-  password: user.password, // NEVER!
-  token: user.token, // NEVER!
-});
-```
-
-#### **Dependency Security**
-
-**MANDATORY:** Regular security audits:
-
-```bash
-# Weekly: Check for vulnerabilities
-npm audit
-
-# Monthly: Update dependencies
-npm update
-
-# Quarterly: Major updates with testing
-npm audit fix --force
-```
-
-#### **Secrets Rotation**
-
-**MANDATORY:** Regular secret rotation schedule:
-
-- **Production secrets:** Rotate every 90 days
-- **Development secrets:** Rotate every 180 days
-- **Compromised secrets:** Rotate immediately
-- **Service account keys:** Rotate every 60 days
-
-#### **Security Hardening Checklist**
-
-For every security-sensitive operation, verify:
-- [ ] Input is validated and sanitized
-- [ ] Output is sanitized (if user-generated)
-- [ ] Authentication is verified
-- [ ] Authorization is checked
-- [ ] Rate limiting is applied
-- [ ] Secrets are not logged
-- [ ] Errors don't leak sensitive information
-- [ ] Security headers are present
-- [ ] HTTPS is enforced (production)
-- [ ] Session security is configured
-- [ ] Dependencies are up-to-date
-- [ ] Security audits are run regularly
-
-**See Also:**
-- `security.mdc` (Security Headers) - Complete security headers configuration
-- `security.mdc` (API Security) - API security requirements
-- `operations.mdc` (Dependency Management) - Dependency update procedures
+- [ ] Input validated (Zod) and sanitized before DB operations
+- [ ] Authentication and authorization verified
+- [ ] Rate limiting applied (100 req/15min default, 10 req/min for auth)
+- [ ] Secrets never logged or exposed via `NEXT_PUBLIC_` prefix
+- [ ] Errors don't leak sensitive info
+- [ ] Security headers present in `next.config.ts` (X-Frame-Options: DENY, CSP, HSTS, nosniff)
+- [ ] HTTPS enforced in production
+- [ ] `npm audit` run weekly, high/critical fixed immediately
+- [ ] Rotate production secrets every 90 days
 
 ## 🤖 **Automated Enforcement**
 
 **Cleanup System:** See `cleanup.mdc` for comprehensive automated enforcement of all security standards.
 
 **Available Checks:**
+
 - Security patterns: `npm run cleanup:check` (validates input validation, rate limiting patterns)
 - API security: Manual review (security headers, CSRF protection)
 
 **Available Fixes:**
+
 - Security patterns: Manual fixes required
 
 **Standards Reference:** See `cleanup.mdc` (Security Standards) for complete enforcement details.

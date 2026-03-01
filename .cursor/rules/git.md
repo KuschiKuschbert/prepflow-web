@@ -1,3 +1,8 @@
+---
+description: Git workflow - branch naming, commit format (Conventional Commits), safe-merge, pre-deploy checks
+globs: .github/**, .husky/**, scripts/safe-merge.sh
+---
+
 # Git — Commit Format, Branch Naming, PR Conventions & Safe Merge
 
 ## Branch Naming
@@ -137,7 +142,7 @@ npm run changelog
 - `package-lock.json` — only npm updates this
 - `migrations/*.sql` — existing migrations are immutable
 - `.next/` — build output (gitignored)
-- `app/nachotaco/` — see curbos/nachotaco protection rules
+- `app/curbos/`, `app/curbos-import/` — see CurbOS protection rules in `development.mdc`
 
 ## Commit Frequency
 

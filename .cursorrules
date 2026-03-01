@@ -5,7 +5,7 @@ You are working on the PrepFlow/CurbOS ecosystem. To ensure continuous improveme
 ## 1. 🧠 Knowledge Base (MANDATORY READ)
 Before proposing code or fixing bugs, you MUST check the **Project Brain**:
 - Path: `docs/AI_RULES.md`
-- **Action**: Read this file to understand established project patterns (e.g., Next.js 15 params unwrapping, Supabase error handling, Ralph Loop methodology).
+- **Action**: Read this file to understand established project patterns (e.g., Next.js 16 params unwrapping, Supabase error handling, Ralph Loop methodology).
 - **Enforcement**: If you violate a rule from this brain, the user will reject your code.
 - **RSI**: Check `npm run rsi:status` for active autonomous rules.
 
@@ -22,14 +22,28 @@ If you encounter an error (build fail, runtime crash, lint error):
 - **End**: Update `docs/DEV_LOG.md` with a summary of your changes, goals achieved, and any blockers.
 
 ## 4. 🚫 Prohibited Patterns
-- **Next.js 15**: Do NOT access `params` or `searchParams` directly. Always unwrap them using `React.use()` or `await`.
+- **Next.js 16**: Do NOT access `params` or `searchParams` directly. Always unwrap them using `React.use()` or `await`.
 - **Console**: Do NOT use `console.log` in production code. Use the project's `logger`.
 
 ## 5. Technology Stack
-- Next.js 15 (App Router)
-- Supabase (PostgreSQL + Auth)
-- Tailwind CSS 4
-- TypeScript 5
+- **Framework:** Next.js 16 (App Router, `proxy.ts` convention)
+- **Auth:** Auth0 SDK `@auth0/nextjs-auth0` v4 — NOT NextAuth
+- **Database:** Supabase PostgreSQL (DB only, not auth)
+- **Styling:** Tailwind CSS 4 (custom breakpoints: `tablet:`, `desktop:`, `large-desktop:`)
+- **Language:** TypeScript 5 (strict)
+- **Server state:** TanStack React Query v5 | **UI state:** Zustand v5
+- **Animation:** Framer Motion v12 | **Validation:** Zod v4
+- **E2E Testing:** Playwright v1.58 | **POS:** Square v44
+
+## 7. 🔒 Protected Areas
+- **NEVER modify** `app/curbos/` or `app/curbos-import/` without explicit user request
+- **NEVER commit** to `main` — always use feature branches
+- **NEVER use** native `confirm()`, `prompt()`, `alert()` — use `useConfirm`/`usePrompt`/`useAlert` hooks
+
+## 8. 📋 Rule Navigation
+- **Always-loaded rules:** `development.mdc`, `design.mdc`, `operations.mdc`, `implementation.mdc`, `technical.mdc`, `cleanup.mdc`, `core.mdc`
+- **File-scoped rules** (auto-load when editing relevant files): `security.mdc`, `testing.mdc`, `dialogs.mdc`, `integrations.md`, `architecture.md`, `git.md`, `stack.md`
+- **See `AGENTS.md`** for complete documentation index and tech stack table
 
 ## 6. 🛡️ Strict Git Workflow
 - **Zero Tolerance**: You are FORBIDDEN from committing directly to `main`.

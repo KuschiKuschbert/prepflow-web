@@ -1,3 +1,8 @@
+---
+description: Folder structure, module boundaries, import rules (what can import what)
+globs: app/**, lib/**, components/**
+---
+
 # Architecture — Folder Structure, Module Boundaries & What Goes Where
 
 ## Top-Level Map
@@ -198,7 +203,7 @@ Key rules:
 ## Special Protected Areas
 
 - `app/curbos/` — Never modify. Pre-commit hook enforces this.
-- `app/nachotaco/` — Excluded from all tooling (lint, typecheck, prettier, cleanup).
+- `app/curbos-import/` — Excluded from all tooling (lint, typecheck, prettier, cleanup).
 - `migrations/` — Never edit existing migration files. Add new ones only.
 - `package-lock.json` — Never manually edit.
 - `e2e/` — Excluded from TypeScript compilation (`tsconfig.json` excludes it).

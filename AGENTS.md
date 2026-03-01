@@ -18,23 +18,35 @@ PrepFlow is a unified restaurant profitability optimization platform that helps 
 3. **Optimistic updates** - MANDATORY for all CRUD operations
 4. **Custom breakpoints only** - Use `desktop:`, `tablet:`, NOT `sm:`, `md:`, `lg:`
 5. **Always use `RefObject<HTMLElement | null>`** for ref types in interfaces
-6. **Design source of truth** - design.mdc defines required patterns; VISUAL_HIERARCHY_STANDARDS.md provides hierarchy guidance (landing strict, webapp flexible)
-7. **No unjustified `any`** - Use proper types; run `npm run audit:any` to track. See `docs/TYPESCRIPT_ANY_MIGRATION.md`
+6. **Design source of truth** - `design.mdc` defines required patterns; VISUAL_HIERARCHY_STANDARDS.md provides hierarchy guidance
+7. **No unjustified `any`** - Use proper types; run `npm run audit:any` to track
+8. **Auth is Auth0 SDK** (`@auth0/nextjs-auth0` v4) — NOT NextAuth. See `integrations.md` for patterns
+9. **Never touch `app/curbos/` or `app/curbos-import/`** without explicit user request
 
 ## 📚 Documentation Index
 
-### Standards & Guidelines
+### Standards & Guidelines (Always-Loaded Rules)
 
-- **[Development Standards](.cursor/rules/development.mdc)** - Code quality, naming, testing, Git workflow, file refactoring
-- **[Design System](.cursor/rules/design.mdc)** - Cyber Carrot design system, breakpoints, components
-- **[Security Standards](.cursor/rules/security.mdc)** - Security practices, input validation, API security
-- **[Testing Standards](.cursor/rules/testing.mdc)** - Testing strategy, unit/integration/E2E tests
-- **[Operations Standards](.cursor/rules/operations.mdc)** - Deployment, monitoring, performance
-- **[Implementation Patterns](.cursor/rules/implementation.mdc)** - API patterns, database patterns, optimistic updates
-- **[Technical Patterns](.cursor/rules/technical.mdc)** - Autosave, Next.js patterns, data standards
+- **[Development Standards](.cursor/rules/development.mdc)** - Code quality, naming, Git workflow, file refactoring, optimistic updates
+- **[Design System](.cursor/rules/design.mdc)** - Cyber Carrot design, breakpoints, Framer Motion, components, responsive
+- **[Operations Standards](.cursor/rules/operations.mdc)** - Deployment, performance, caching, memoization guidelines
+- **[Implementation Patterns](.cursor/rules/implementation.mdc)** - API patterns, database patterns
+- **[Technical Patterns](.cursor/rules/technical.mdc)** - Autosave, Next.js 16, React Query, Zustand, DPR canvas
 - **[Cleanup Standards](.cursor/rules/cleanup.mdc)** - Automated enforcement, code quality checks
+- **[Core Patterns](.cursor/rules/core.mdc)** - Auth0 SDK setup, allowlist, Stripe, project overview
+- **[Context Hygiene](.cursor/rules/context-hygiene.md)** - Handoff checkpoints, self-improvement protocol, session-end checklist
+
+### File-Scoped Rules (Auto-loaded when editing relevant files)
+
+- **[Security](.cursor/rules/security.mdc)** - Input validation, Supabase query safety, API security (loads for `app/api/**`, `lib/**`)
+- **[Integrations](.cursor/rules/integrations.md)** - Auth0, Supabase, Stripe, Square, Google APIs (loads for `lib/auth0*`, `lib/stripe*`)
+- **[Testing](.cursor/rules/testing.mdc)** - Jest, Playwright E2E patterns, smoke/crawl tests (loads for `*.test.*`, `e2e/**`)
+- **[Dialogs](.cursor/rules/dialogs.mdc)** - `useConfirm`/`usePrompt`/`useAlert` hooks, PrepFlow voice (loads for dialog components)
+- **[Architecture](.cursor/rules/architecture.md)** - Folder structure, import boundaries (loads for `app/**`, `lib/**`)
+- **[Git Workflow](.cursor/rules/git.md)** - Branching, commit format, safe-merge (loads for `.github/**`)
+- **[Stack Versions](.cursor/rules/stack.md)** - Exact package versions and constraints (loads for `package.json`)
+- **[Error Patterns](.cursor/rules/error-patterns.mdc)** - Learned fixes for common errors (loads for `app/api/**`)
 - **[RSI Standards](docs/AI_RULES.md#6-recursive-self-improvement-rsi)** - Autonomous repair and evolution rules
-- **[Dialog Standards](.cursor/rules/dialogs.mdc)** - Dialog usage, PrepFlow voice guidelines
 
 ### Implementation Guides
 
@@ -103,23 +115,29 @@ npm run detect-breakpoints
 **Optimistic Updates (MANDATORY for CRUD):**
 
 - Store original state → Update UI immediately → Make API call → Revert on error
-- See: `.cursor/rules/development.mdc` (Optimistic Updates Pattern)
+- See: `development.mdc` (Optimistic Updates Pattern)
 
-**File Size Limits:**
+**File Size Limits:** Pages: 500 | Components: 300 | API: 200 | Utils: 150 | Hooks: 120
 
-- Pages: 500 lines max
-- Components: 300 lines max
-- API Routes: 200 lines max
-- Utilities: 150 lines max
-- Hooks: 120 lines max
+**Custom Breakpoints:** `tablet:` (481px+) | `desktop:` (1025px+, PRIMARY) | `large-desktop:` (1440px+) | `xl:` (1920px+) | `2xl:` (2560px+). NEVER use `sm:`, `md:`, `lg:`.
 
-**Custom Breakpoints:**
+### Tech Stack Summary
 
-- `tablet:` (481px+) - Replaces `sm:` and `md:`
-- `desktop:` (1025px+) - **PRIMARY** - Replaces `lg:`
-- `large-desktop:` (1440px+)
-- `xl:` (1920px+)
-- `2xl:` (2560px+)
+| Layer        | Package                 | Version | Notes                             |
+| ------------ | ----------------------- | ------- | --------------------------------- |
+| Framework    | Next.js                 | 16      | App Router, `proxy.ts` convention |
+| Auth         | `@auth0/nextjs-auth0`   | v4      | NOT NextAuth                      |
+| Database     | `@supabase/supabase-js` | v2      | DB only, not auth                 |
+| Payments     | `stripe`                | v20     | with webhook idempotency          |
+| POS          | `square`                | v44     | OAuth sync via `lib/square/`      |
+| Styling      | Tailwind CSS            | v4      | Custom breakpoints (see above)    |
+| Animation    | `framer-motion`         | v12     | See `design.mdc` for patterns     |
+| Server state | `@tanstack/react-query` | v5      | See `technical.mdc`               |
+| UI state     | `zustand`               | v5      | See `technical.mdc`               |
+| Validation   | `zod`                   | v4      | MANDATORY for all API inputs      |
+| Charts       | `recharts`              | v3      | Temperature analytics             |
+| E2E tests    | `@playwright/test`      | v1.58   | See `testing.mdc`                 |
+| Language     | TypeScript              | 5       | Strict mode                       |
 
 ## 🎯 PrepFlow COGS Dynamic Methodology
 

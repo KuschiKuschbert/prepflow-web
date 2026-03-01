@@ -1,3 +1,8 @@
+---
+description: Naming conventions, file conventions, import ordering, comment style for PrepFlow code
+globs: app/**, lib/**, components/**
+---
+
 # Style — Naming, File Conventions, Import Ordering & Comment Style
 
 ## File Naming

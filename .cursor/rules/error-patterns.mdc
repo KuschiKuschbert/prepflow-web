@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+description: Learned error patterns and fixes for TypeScript, async/error handling, Supabase, and API routes
+globs: app/api/**, lib/api-error*, lib/error-*, app/api/*/route.ts
 ---
 
 # Error Patterns & Learned Fixes
@@ -22,20 +23,24 @@ This file contains error patterns learned from actual errors in the codebase, al
 ### Pattern: Type 'X' is not assignable to type 'Y'
 
 **Detection:**
+
 - TypeScript compiler error: "Type 'X' is not assignable to type 'Y'"
 - Common in function parameters, return types, variable assignments
 
 **Fix:**
+
 - Add proper type annotations
 - Use type assertions when appropriate (use carefully)
 - Fix type definitions
 
 **Prevention:**
+
 - Use strict TypeScript types
 - Avoid `any` types without justification
 - Define complete type interfaces
 
 **Example:**
+
 ```typescript
 // ❌ BAD
 const value: string = someFunction(); // Error if returns number
@@ -49,20 +54,24 @@ const value: number = someFunction(); // Correct type
 ### Pattern: Missing try-catch in async functions
 
 **Detection:**
+
 - Async functions without try-catch blocks
 - Unhandled promise rejections
 
 **Fix:**
+
 - Wrap async operations in try-catch blocks
 - Log errors with logger
 - Re-throw or return appropriate error responses
 
 **Prevention:**
+
 - Always wrap async operations in try-catch blocks
 - Use logger for error logging (not console.error)
 - Use ApiErrorHandler for API routes
 
 **Example:**
+
 ```typescript
 // ❌ BAD
 async function fetchData() {
@@ -85,20 +94,24 @@ async function fetchData() {
 ### Pattern: Missing ApiErrorHandler in API routes
 
 **Detection:**
+
 - API routes with error responses not using ApiErrorHandler
 - Generic 500 errors without proper formatting
 
 **Fix:**
+
 - Use ApiErrorHandler.createError() for error responses
 - Include proper error codes
 - Log errors with logger
 
 **Prevention:**
+
 - Always use ApiErrorHandler for API route error responses
 - Include error codes as second parameter
 - Log errors before returning error response
 
 **Example:**
+
 ```typescript
 // ❌ BAD
 export async function GET(request: NextRequest) {
@@ -129,20 +142,24 @@ export async function GET(request: NextRequest) {
 ### Pattern: Missing error handling in Supabase queries
 
 **Detection:**
+
 - Supabase queries without error checking
 - Unhandled database errors
 
 **Fix:**
+
 - Always check error field from Supabase queries
 - Use ApiErrorHandler for database errors
 - Log errors with logger
 
 **Prevention:**
+
 - Always check error field: `const { data, error } = await supabase.from('table').select()`
 - Use ApiErrorHandler.fromSupabaseError() for database errors
 - Never chain .catch() on Supabase query builders
 
 **Example:**
+
 ```typescript
 // ❌ BAD
 const { data } = await supabase.from('table').select();
@@ -159,6 +176,7 @@ if (error) {
 ## Updating This File
 
 This file is automatically updated when:
+
 - Fixes are documented via `scripts/error-learning/document-fix-interactive.js`
 - Patterns are detected via `scripts/error-learning/detect-fixes.js`
 - Rules are generated via `lib/error-learning/rule-generator.ts`

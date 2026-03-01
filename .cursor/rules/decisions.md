@@ -1,3 +1,8 @@
+---
+description: Architecture Decision Records (ADRs) - why certain technical choices were made
+globs: docs/**
+---
+
 # Decisions — Key Architectural Choices & Reasoning
 
 This file is an append-only ADR-style log. Add new decisions at the bottom with `[YYYY-MM-DD]`.

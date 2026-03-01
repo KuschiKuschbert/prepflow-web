@@ -1,3 +1,8 @@
+---
+description: Third-party integration patterns - Auth0, Stripe, Square, Supabase, Google Drive
+globs: lib/auth0*, lib/stripe*, lib/square/**, app/api/webhook/**, app/api/billing/**
+---
+
 # Integrations — Third-Party Services, Auth Patterns & Wrapper Conventions
 
 ## Auth0 (Authentication)

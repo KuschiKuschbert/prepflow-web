@@ -1,3 +1,8 @@
+---
+description: Multi-agent orchestration patterns for complex tasks requiring parallel subagents
+globs: scripts/**
+---
+
 # Sub-Agent Orchestration — When to Spawn, How to Hand Off
 
 ## When to Spawn Sub-Agents
@@ -35,7 +40,7 @@ When spawning a sub-agent, always include:
 [What to return — checkpoint block, list of files modified, TECH_DEBT items]
 
 ## CONSTRAINTS:
-- Never modify app/curbos/ or app/nachotaco/
+- Never modify app/curbos/ or app/curbos-import/ without ALLOW_CURBOS_MODIFY=1
 - Never modify migrations/ or package-lock.json
 - Follow all rules in .cursor/rules/
 - If unsure about a change, add to TECH_DEBT.md instead

@@ -7,6 +7,7 @@ alwaysApply: true
 **Purpose:** Centralized documentation of ALL cleanup standards with automated enforcement capabilities.
 
 **See Also:**
+
 - `development.mdc` - Development workflow and refactoring standards
 - `design.mdc` - Design system and UI standards
 - `core.mdc` - Core TypeScript and naming standards
@@ -17,6 +18,7 @@ alwaysApply: true
 - `technical.mdc` - Technical patterns and autosave
 
 **Automated Enforcement:**
+
 - Check: `npm run cleanup:check` - Validates all standards
 - Full check: `npm run check:full` - Combines cleanup with design audits, tests, deps, E2E (periodic health)
 - Fix: `npm run cleanup:fix` - Auto-fixes available issues (some codemods may fail on edge cases)
@@ -30,6 +32,7 @@ alwaysApply: true
 **Source:** `development.mdc` (File Refactoring Standards)
 
 **MANDATORY Limits:**
+
 - **Pages:** 500 lines maximum
 - **Components:** 300 lines maximum
 - **API Routes:** 200 lines maximum
@@ -38,10 +41,12 @@ alwaysApply: true
 - **Data Files:** 2000 lines maximum (seed data, translations)
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (file-sizes check)
 - Fix: Manual refactoring required (see `development.mdc` for guidelines)
 
 **Related:**
+
 - See `development.mdc` (File Refactoring Standards) for refactoring guidelines
 - See `development.mdc` (Git Best Practices) for refactoring workflow
 - **📚 Comprehensive Guide:** See `docs/FILE_SIZE_REFACTORING_GUIDE.md` for detailed refactoring patterns, examples, decision trees, and best practices (includes 5 proven patterns with real-world examples from January 2025 refactoring)
@@ -55,15 +60,18 @@ alwaysApply: true
 **Source:** `development.mdc` (Code Quality Requirements), `core.mdc` (TypeScript Ref Types)
 
 **Standards:**
+
 - Strict typing, no `any` types without justification
 - Ref Types: `RefObject<HTMLElement | null>` (MANDATORY)
 - No `.catch()` chaining on Supabase query builders (MANDATORY)
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (typescript-ref-types check)
 - Fix: Manual fixes required
 
 **Related:**
+
 - See `core.mdc` (TypeScript Ref Types) for detailed patterns
 - See `core.mdc` (Supabase TypeScript Gotcha) for query patterns
 
@@ -72,15 +80,18 @@ alwaysApply: true
 **Source:** `development.mdc` (Codemod Rules)
 
 **Standard:**
+
 - Use `logger.dev()` instead of `console.log()` (360 instances found)
 - Use `logger.error()` instead of `console.error()`
 - Use `logger.warn()` instead of `console.warn()`
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (console-logs check)
 - Fix: `scripts/cleanup.js --fix` (uses existing codemod)
 
 **Related:**
+
 - See `development.mdc` (Console Migration Codemod) for migration details
 - See `lib/logger.ts` for logger utility
 
@@ -89,16 +100,19 @@ alwaysApply: true
 **Source:** `development.mdc` (Naming Conventions)
 
 **Standards:**
+
 - Files: kebab-case (e.g., `exit-intent-popup.tsx`)
 - Components: PascalCase (e.g., `ExitIntentPopup`)
 - Functions: camelCase with descriptive verbs
 - Constants: UPPER_SNAKE_CASE (e.g., `GTM_EVENTS`)
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (naming check)
 - Fix: Manual fixes required
 
 **Related:**
+
 - See `development.mdc` (Naming Conventions) for complete guidelines
 
 ---
@@ -110,14 +124,17 @@ alwaysApply: true
 **Source:** `design.mdc` (Custom Breakpoint System)
 
 **MANDATORY Standards:**
+
 - Custom breakpoints ONLY: `tablet:`, `desktop:`, `large-desktop:`, `xl:`, `2xl:`
 - Rogue breakpoints to fix: `sm:`, `md:`, `lg:` (found in 5+ files, DISABLED)
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (breakpoints check) or `npm run detect-breakpoints`
 - Fix: `scripts/cleanup.js --fix` (uses existing breakpoint codemod)
 
 **Related:**
+
 - See `design.mdc` (Custom Breakpoint System) for complete breakpoint map
 - See `scripts/detect-breakpoints.js` for detection script
 - See `scripts/codemods/breakpoint-migration.js` for migration codemod
@@ -127,16 +144,19 @@ alwaysApply: true
 **Source:** `design.mdc` (Icon Standards)
 
 **MANDATORY Standards:**
+
 - Use Lucide React icons exclusively (no emoji icons)
 - Use `Icon` wrapper component from `components/ui/Icon.tsx`
 - Sizes: `xs` (12px), `sm` (16px), `md` (20px), `lg` (24px), `xl` (32px)
 - Accessibility: Auto `aria-hidden` or `aria-label`
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (icons check)
 - Fix: Manual fixes required
 
 **Related:**
+
 - See `design.mdc` (Icon Standards) for complete guidelines
 - See `components/ui/Icon.tsx` for Icon component implementation
 
@@ -145,6 +165,7 @@ alwaysApply: true
 **Source:** `design.mdc` (Cyber Carrot Design System)
 
 **Standards:**
+
 - Border radius: `rounded-3xl` (containers), `rounded-2xl` (cards)
 - Colors: Use CSS variables (`--primary`, `--secondary`, etc.)
 - Typography: Geist Sans (primary), Geist Mono (monospace)
@@ -152,10 +173,12 @@ alwaysApply: true
 - Z-index hierarchy: Documented in design.mdc
 
 **Enforcement:**
+
 - Check: Manual review (design patterns)
 - Fix: Manual fixes required
 
 **Related:**
+
 - See `design.mdc` (Cyber Carrot Design System) for complete guidelines
 
 ---
@@ -167,15 +190,18 @@ alwaysApply: true
 **Source:** `development.mdc` (JSDoc Documentation Standards)
 
 **MANDATORY Standards:**
+
 - All public functions, components, hooks must have JSDoc
 - Required fields: Description, @param, @returns
 - Optional fields: @throws, @example, @see
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (jsdoc check)
 - Fix: Manual fixes required
 
 **Related:**
+
 - See `development.mdc` (JSDoc Documentation Standards) for templates
 - See `development.mdc` (JSDoc Template) for examples
 
@@ -188,6 +214,7 @@ alwaysApply: true
 **Source:** `development.mdc` (Prettier Configuration)
 
 **Standards:**
+
 - Semicolons: Required
 - Single quotes: Required
 - Print width: 100 characters
@@ -195,10 +222,12 @@ alwaysApply: true
 - Tailwind plugin: Auto-sort classes
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (prettier check) or `npm run format:check`
 - Fix: `scripts/cleanup.js --fix` (uses Prettier) or `npm run format`
 
 **Related:**
+
 - See `development.mdc` (Prettier Configuration) for complete settings
 - See `.prettierrc` for configuration file
 
@@ -207,15 +236,18 @@ alwaysApply: true
 **Source:** `development.mdc` (ESLint Configuration)
 
 **Standards:**
+
 - React hooks rules: Enforced
 - Unescaped entities: Enforced (use `&apos;`, `&quot;`)
 - React compiler rules: Disabled
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (eslint check) or `npm run lint`
 - Fix: `scripts/cleanup.js --fix` (uses ESLint --fix)
 
 **Related:**
+
 - See `development.mdc` (ESLint Configuration) for complete rules
 - See `eslint.config.mjs` for configuration file
 
@@ -226,16 +258,19 @@ alwaysApply: true
 **Source:** `development.mdc` (Git Best Practices)
 
 **MANDATORY Standards:**
+
 - Never work directly on main branch
 - Create feature branch: `improvement/feature-name`
 - Test before merge
 - Use Conventional Commits format
 
 **Enforcement:**
+
 - Check: Manual review (git workflow)
 - Fix: Manual fixes required
 
 **Related:**
+
 - See `development.mdc` (Git Best Practices) for complete workflow
 - See `development.mdc` (Automatic CHANGELOG Generation) for commit format
 
@@ -248,6 +283,7 @@ alwaysApply: true
 **Status:** ✅ Fully Implemented
 
 **MANDATORY Standards:**
+
 - Success responses must use `{ success: true, message, data }`
 - Error responses must use `ApiErrorHandler.createError()`
 - All error responses must include proper HTTP status codes
@@ -257,10 +293,12 @@ alwaysApply: true
 - POST/PUT/PATCH routes must use Zod schemas for input validation
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (api-patterns check)
 - Fix: Manual fixes required
 
 **Related:**
+
 - See `implementation.mdc` (API Response Standards) for complete guidelines
 - See `ERROR_HANDLING_STANDARDS.md` for error handling patterns
 - **Example:** `app/api/image-proxy/route.ts` - Demonstrates proper `ApiErrorHandler` usage with comprehensive error handling (validation errors, timeout errors, abort errors, fetch errors)
@@ -274,6 +312,7 @@ alwaysApply: true
 **Status:** ✅ Fully Implemented
 
 **MANDATORY Standards:**
+
 - Supabase parameterized queries ONLY (no string concatenation)
 - No `.catch()` chaining on query builders (MANDATORY)
 - Use `const { data, error } = await` pattern with explicit error handling
@@ -282,10 +321,12 @@ alwaysApply: true
 - Standard table structure with `created_at`, `updated_at`
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (database-patterns check)
 - Fix: Manual fixes required
 
 **Related:**
+
 - See `core.mdc` (Supabase TypeScript Gotcha) for query patterns
 - See `implementation.mdc` (Database Schema Standards) for table structure
 
@@ -298,6 +339,7 @@ alwaysApply: true
 **Status:** ✅ Fully Implemented
 
 **MANDATORY Standards:**
+
 - Input validation: Zod schemas for all POST/PUT/PATCH routes
 - Validation must occur before database operations
 - Rate limiting: 100 req/15min (default), 10 req/min (auth) - warning if missing
@@ -306,10 +348,12 @@ alwaysApply: true
 - Security headers: Configured in next.config.ts (X-Frame-Options, CSP, etc.)
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (security check)
 - Fix: Manual fixes required
 
 **Related:**
+
 - See `security.mdc` (Security Standards) for complete guidelines
 - See `security.mdc` (API Security) for API security patterns
 - **Example:** `app/api/image-proxy/route.ts` - Demonstrates security best practices: domain whitelisting, URL validation, protocol validation (HTTP/HTTPS only), input sanitization
@@ -323,6 +367,7 @@ alwaysApply: true
 **Status:** ✅ Fully Implemented
 
 **Standards:**
+
 - LCP: < 2.5 seconds
 - FID: < 100 milliseconds
 - CLS: < 0.1
@@ -333,10 +378,12 @@ alwaysApply: true
   - CSS bundle: 50KB (50000 bytes)
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (performance check)
 - Fix: Manual optimization required (violations provide actionable recommendations)
 
 **Implementation Details:**
+
 - Analyzes bundle sizes from `.next/static` directory (requires `npm run build` first)
 - Compares against budgets from `scripts/check-performance-budget.js`
 - Uses logic from `scripts/analyze-bundle.js` for bundle analysis
@@ -344,6 +391,7 @@ alwaysApply: true
 - Creates violations for exceeded budgets with specific recommendations
 
 **Related:**
+
 - See `operations.mdc` (Performance Standards) for complete targets
 - See `operations.mdc` (Performance Monitoring) for monitoring guidelines
 - See `scripts/analyze-bundle.js` for bundle analysis implementation
@@ -356,16 +404,19 @@ alwaysApply: true
 **Source:** `testing.mdc` (Testing Standards)
 
 **Standards:**
+
 - Coverage: 60% minimum, 80% target
 - Critical paths: 100% coverage
 - Accessibility: WCAG 2.1 AA compliance
 - Color contrast: 4.5:1 minimum
 
 **Enforcement:**
+
 - Check: Manual review (test coverage)
 - Fix: Manual fixes required
 
 **Related:**
+
 - See `testing.mdc` (Testing Standards) for complete guidelines
 - See `testing.mdc` (Test Coverage Targets) for coverage requirements
 
@@ -376,15 +427,18 @@ alwaysApply: true
 **Source:** `technical.mdc` (Autosave & Drafts)
 
 **Standards:**
+
 - Use `deriveAutosaveId()` for stable IDs
 - Avoid `"new"` as entityId
 - Clear drafts after successful save
 
 **Enforcement:**
+
 - Check: Manual review (autosave patterns)
 - Fix: Manual fixes required
 
 **Related:**
+
 - See `technical.mdc` (Autosave & Drafts) for complete guidelines
 - See `lib/autosave-id.ts` for ID derivation utility
 
@@ -397,6 +451,7 @@ alwaysApply: true
 **Status:** ✅ Fully Implemented
 
 **MANDATORY Standards:**
+
 - All CRUD operations (Create, Update, Delete) must use optimistic updates
 - Store original state before updates
 - Update UI immediately (setState before await)
@@ -406,10 +461,12 @@ alwaysApply: true
 - No `fetchData()` calls after successful mutations
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (optimistic-updates check)
 - Fix: Manual fixes required (requires refactoring)
 
 **Related:**
+
 - See `development.mdc` (Optimistic Updates Pattern) for detailed pattern and examples
 - See `operations.mdc` (Optimistic Updates Standard) for performance targets
 - See `implementation.mdc` (Optimistic Updates Implementation Pattern) for code examples
@@ -425,6 +482,7 @@ alwaysApply: true
 **Status:** ✅ Fully Implemented
 
 **Standards:**
+
 - Components using hooks or browser APIs must have `"use client"` directive
 - Hooks must be called at top level (not conditionally)
 - useEffect hooks with timers/event listeners must have cleanup functions
@@ -433,11 +491,13 @@ alwaysApply: true
 - Consider useMemo/useCallback for expensive computations
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (react-patterns check)
 - Fix: Manual fixes required
 - Severity: `warning` (important but not blocking)
 
 **Related:**
+
 - See `development.mdc` (Code Quality Requirements) for complete guidelines
 - See React documentation for hooks rules
 
@@ -450,6 +510,7 @@ alwaysApply: true
 **Status:** ✅ Fully Implemented
 
 **MANDATORY Standards:**
+
 - All API routes must use `ApiErrorHandler.createError()` for error responses
 - All error logging must use `logger.error()` (not console.error)
 - All async operations must have try-catch blocks
@@ -458,10 +519,12 @@ alwaysApply: true
 - ApiErrorHandler.createError() must include error code as second parameter
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (error-handling check)
 - Fix: Manual fixes required
 
 **Related:**
+
 - See `ERROR_HANDLING_STANDARDS.md` for complete error handling guidelines
 - See `implementation.mdc` (Error Handling Standards) for API error handling
 - See `lib/api-error-handler.ts` for ApiErrorHandler utility
@@ -475,6 +538,7 @@ alwaysApply: true
 **Status:** ✅ Fully Implemented
 
 **Standards:**
+
 - Use contractions ("can't", "won't", "you'll") for natural speech
 - Use kitchen/chef metaphors naturally ("start fresh", "all the trimmings")
 - Be clear about consequences ("All temperature logs go with it")
@@ -483,10 +547,12 @@ alwaysApply: true
 - Professional but friendly tone
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (voice-consistency check)
 - Fix: `npm run cleanup:fix` (auto-fixes some violations via voice-consistency fix module)
 
 **Related:**
+
 - See `.cursor/rules/dialogs.mdc` (PrepFlow Voice Guidelines) for complete voice guidelines
 - See `development.mdc` (PrepFlow Voice Guidelines) for voice standards
 - See `docs/VOICE_ENHANCEMENT_GUIDE.md` for comprehensive voice enhancement guide
@@ -500,6 +566,7 @@ alwaysApply: true
 **Status:** ✅ Fully Implemented
 
 **Standards:**
+
 - Remove unused components
 - Remove unused functions
 - Remove unused exports
@@ -507,10 +574,12 @@ alwaysApply: true
 - Remove commented-out code
 
 **Enforcement:**
+
 - Check: `scripts/cleanup.js` (dead-code check, unused-imports check)
 - Fix: `npm run cleanup:fix` (auto-removes unused exports via ts-prune)
 
 **Implementation Details:**
+
 - Uses `ts-prune` to detect unused TypeScript/JavaScript exports
 - Requires TypeScript project (`tsconfig.json`)
 - Automatically excludes:
@@ -522,6 +591,7 @@ alwaysApply: true
 - Gracefully handles missing prerequisites (skips if tsconfig.json not found)
 
 **Usage:**
+
 ```bash
 # Check for unused exports
 npm run cleanup:check
@@ -531,6 +601,7 @@ npm run cleanup:fix
 ```
 
 **Related:**
+
 - See `development.mdc` (Dead Code Removal) for removal guidelines
 - See `ts-prune` documentation for detection algorithm
 - Note: Unused imports are handled separately by the unused-imports check
@@ -561,17 +632,20 @@ npm run cleanup:all
 ### **Integration**
 
 **Pre-commit Hook:**
+
 - The default pre-commit runs only fast checks (merge conflicts, curbos protection, file size, lint-staged)
 - Run `npm run cleanup:staged` manually before committing to check staged files
 - Blocks commit on critical violations when run
 - Auto-fixes safe issues when run with `cleanup:fix`
 
 **CI Pipeline:**
+
 - Runs `cleanup:check` on all PRs (when configured)
 - Generates report artifact
 - Fails build on critical violations
 
 **See Also:**
+
 - `scripts/cleanup.js` - Main cleanup script
 - `scripts/cleanup/checks/` - Individual check modules
 - `scripts/cleanup/fixes/` - Individual fix modules

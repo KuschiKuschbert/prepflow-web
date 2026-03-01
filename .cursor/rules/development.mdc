@@ -1,6 +1,7 @@
 ---
 alwaysApply: true
 ---
+
 ## 📋 **Development Standards**
 
 ### **Code Quality Requirements**
@@ -33,61 +34,9 @@ alwaysApply: true
 
 ## 🔧 **Code Formatting & Quality Tools**
 
-### **Prettier Configuration**
+**Prettier:** `npm run format` | `npm run format:check` | `npm run format:staged`. Config: `.prettierrc` (single quotes, semi, 100 width, trailing commas, `prettier-plugin-tailwindcss`). Runs automatically via `lint-staged` on commit.
 
-**Status:** ✅ Installed and configured
-
-**Configuration File:** `.prettierrc`
-
-**Settings:**
-- **Semi:** `true` (semicolons required)
-- **Trailing Comma:** `all` (trailing commas in objects/arrays)
-- **Single Quote:** `true` (single quotes for strings)
-- **Print Width:** `100` (line length)
-- **Tab Width:** `2` (indentation)
-- **Use Tabs:** `false` (spaces, not tabs)
-- **Bracket Spacing:** `true` (spaces in object literals)
-- **Arrow Parens:** `avoid` (omit parens when possible)
-- **End of Line:** `lf` (Unix line endings)
-- **Plugins:** `prettier-plugin-tailwindcss` (Tailwind class sorting)
-
-**Scripts:**
-- `npm run format` - Format entire project
-- `npm run format:check` - Check formatting without modifying files
-- `npm run format:staged` - Format staged files (via lint-staged)
-
-**Integration:**
-- Prettier runs automatically on commit via `lint-staged`
-- CI pipeline checks formatting via `format:check`
-- All files must be formatted before merging PRs
-
-**Usage:**
-```bash
-# Format entire project
-npm run format
-
-# Check formatting (CI)
-npm run format:check
-
-# Format only staged files
-npm run format:staged
-```
-
-### **ESLint Configuration**
-
-**Configuration File:** `eslint.config.mjs`
-
-**Extends:**
-- `next/core-web-vitals` - Next.js recommended rules
-
-**Custom Rules:**
-- React compiler rules disabled (set-state-in-effect, purity, refs, preserve-manual-memoization)
-- React hooks rules enforced
-- Unescaped entities enforced (use `&apos;`, `&quot;`, etc.)
-
-**Scripts:**
-- `npm run lint` - Lint entire project
-- CI pipeline runs lint on all PRs
+**ESLint:** `npm run lint`. Config: `eslint.config.mjs` extends `next/core-web-vitals`. Unescaped entities enforced — use `&apos;`, `&quot;` in JSX.
 
 ## 🚀 **CI/CD & Automation**
 
@@ -98,6 +47,7 @@ npm run format:staged
 **MANDATORY:** Before pushing to `main`, run `npm run pre-deploy` to verify your code will deploy successfully on Vercel.
 
 **What it checks:**
+
 - Node version (>=22.0.0)
 - Dependencies installation (`npm ci`)
 - Lint check (`npm run lint`)
@@ -107,6 +57,7 @@ npm run format:staged
 - Build check (`npm run build`) - **Most important, this is what Vercel runs**
 
 **Usage:**
+
 ```bash
 # Run all pre-deployment checks
 npm run pre-deploy
@@ -119,16 +70,19 @@ npm run pre-deploy
 **File:** `.github/workflows/ci-cd.yml`
 
 **Triggers:**
+
 - Pull requests to `main`
 - Pushes to `main`
 
 **Jobs:**
+
 1. **Lint** - Runs `npm run lint`
 2. **Type Check** - Runs `npm run type-check`
 3. **Format Check** - Runs `npm run format:check`
 4. **Build** - Runs `npm run build`
 
 **Requirements:**
+
 - All jobs must pass for PR merge
 - Node.js 22 LTS
 - Automatic npm cache
@@ -142,6 +96,7 @@ npm run pre-deploy
 **Configuration:** `.github/labeler.yml`
 
 **Labels Applied Automatically:**
+
 - `refactor` - Code refactoring changes
 - `bugfix` - Bug fixes
 - `ui` - UI/component changes
@@ -155,6 +110,7 @@ npm run pre-deploy
 - `types` - TypeScript type changes
 
 **How It Works:**
+
 - Analyzes changed files in PR
 - Matches patterns in `.github/labeler.yml`
 - Applies appropriate labels automatically
@@ -169,12 +125,14 @@ npm run pre-deploy
 **Command:** `npm run changelog`
 
 **How It Works:**
+
 - Analyzes git commits since last tag (or all commits)
 - Parses Conventional Commits format: `type(scope): subject`
 - Groups commits by type (feat, fix, docs, etc.)
 - Generates formatted CHANGELOG.md entry
 
 **Commit Types:**
+
 - 🚀 `feat:` - New features
 - 🐛 `fix:` - Bug fixes
 - 📚 `docs:` - Documentation
@@ -188,17 +146,21 @@ npm run pre-deploy
 - ⏪ `revert:` - Reverted commits
 
 **Output Format:**
+
 ```markdown
 ## [0.1.1] - 2025-01-XX
 
 ### 🚀 Features
+
 - New feature description (abc1234)
 
 ### 🐛 Fixes
+
 - Bug fix description (def5678)
 ```
 
 **Usage:**
+
 ```bash
 # Generate changelog from recent commits
 npm run changelog
@@ -214,7 +176,7 @@ npm run changelog
 
 ### **JSDoc Template**
 
-```typescript
+````typescript
 /**
  * Brief description of what the function/component does.
  *
@@ -229,11 +191,11 @@ npm run changelog
  * console.log(result); // Output description
  * ```
  */
-```
+````
 
 ### **Component JSDoc Template**
 
-```typescript
+````typescript
 /**
  * Component description.
  *
@@ -251,11 +213,11 @@ npm run changelog
 export function MyComponent({ title, onClick }: Props) {
   // ...
 }
-```
+````
 
 ### **Hook JSDoc Template**
 
-```typescript
+````typescript
 /**
  * Hook description.
  *
@@ -271,7 +233,7 @@ export function MyComponent({ title, onClick }: Props) {
 export function useMyHook(param: string) {
   // ...
 }
-```
+````
 
 ### **JSDoc Standards**
 
@@ -285,72 +247,9 @@ export function useMyHook(param: string) {
 
 ## 💬 **Dialog Usage Standards**
 
-### **MANDATORY: Never Use Native Browser Dialogs**
+**NEVER use native `confirm()`, `prompt()`, or `alert()`.** Use `useConfirm`, `usePrompt`, `useAlert` hooks instead.
 
-**NEVER use native browser dialogs:**
-- ❌ `confirm()` - Use `useConfirm` hook instead
-- ❌ `prompt()` - Use `usePrompt` hook instead
-- ❌ `alert()` - Use `useAlert` hook instead
-
-**Why:** Native dialogs are inaccessible, unstyled, and break user experience. Our custom dialogs follow Cyber Carrot Design System, are fully accessible, and use PrepFlow's voice.
-
-### **Dialog Hook Usage**
-
-**Decision Tree:**
-
-1. **Need user confirmation?** → Use `useConfirm`
-   - Delete actions → `variant: 'danger'`
-   - Disconnect/disable actions → `variant: 'warning'`
-   - Populate/test data → `variant: 'info'`
-
-2. **Need user input?** → Use `usePrompt`
-   - Text input (names, descriptions) → `type: 'text'`
-   - Number input (percentages, quantities) → `type: 'number'` with `min`/`max`
-
-3. **Just showing a message?** → Use `useAlert`
-   - Success messages → `variant: 'info'`
-   - Warning messages → `variant: 'warning'`
-   - Error messages → `variant: 'danger'`
-
-### **PrepFlow Voice Guidelines**
-
-**Tone:** Professional but friendly, kitchen-themed metaphors when appropriate, clear and direct.
-
-**Do:**
-- Use kitchen/chef metaphors naturally ("start fresh", "all the trimmings", "can't undo this one")
-- Be clear about consequences ("All temperature logs go with it", "All dishes will be unassigned")
-- Keep it concise but informative
-- Use contractions ("can't", "won't", "you'll") for natural speech
-- Add personality without being unprofessional
-
-**Don't:**
-- Overuse emojis (we're professional, not a text message)
-- Be overly casual ("yo", "dude", etc.)
-- Make jokes at the user's expense
-- Be vague about consequences
-- Use technical jargon unnecessarily
-
-**Examples:**
-- ✅ "Delete this ingredient? This action can't be undone. Last chance to back out."
-- ✅ "Disconnect Google Drive? You'll need to reconnect if you want to upload backups later."
-- ❌ "Are you sure you want to delete this item?" (too generic)
-- ❌ "⚠️ DELETE??? 😱" (too casual/unprofessional)
-
-**See Also:**
-- `docs/VOICE_ENHANCEMENT_GUIDE.md` - Comprehensive voice enhancement guide with examples for dialogs, dropdowns, and input fields (MANDATORY for all new code)
-- `.cursor/rules/dialogs.mdc` - Dialog usage standards and PrepFlow voice guidelines
-- `.cursor/rules/cleanup.mdc` (Voice Consistency Standards) - Automated voice consistency enforcement
-
-### **Accessibility Requirements**
-
-**MANDATORY:** All dialogs must meet WCAG 2.1 AA standards.
-
-- **Focus Trap:** Tab/Shift+Tab loops within dialog (can't escape until you decide)
-- **Keyboard:** Escape closes dialog, Enter confirms (for InputDialog)
-- **Focus Return:** Returns focus to trigger element on close
-- **ARIA:** Proper labels and roles for screen readers
-
-**See Also:** `.cursor/rules/dialogs.mdc` for complete dialog standards and usage guidelines.
+**See `dialogs.mdc` for complete dialog API, PrepFlow voice guidelines, accessibility requirements, and z-index hierarchy.**
 
 ## 🔄 **Codemod Rules & Transformations**
 
@@ -367,11 +266,13 @@ export function useMyHook(param: string) {
 **File:** `scripts/codemods/breakpoint-migration.js`
 
 **Transformations:**
+
 - `sm:` → `tablet:` (481px+)
 - `md:` → `tablet:` (481px+)
 - `lg:` → `desktop:` (1025px+)
 
 **Targets only Tailwind class strings (AST-based):**
+
 - JSX `className="sm:text-lg"` or `class="..."`
 - JSX `className={`sm:text-lg ${var}`}` template literals
 - Object property **values** (e.g. `container: 'sm:px-6 lg:px-8'` in style configs)
@@ -379,6 +280,7 @@ export function useMyHook(param: string) {
 **Does NOT replace object keys** like `{ sm: '...', md: '...', lg: '...' }` (size variants).
 
 **Usage:**
+
 ```bash
 # Dry-run (preview changes)
 npx jscodeshift -t scripts/codemods/breakpoint-migration.js --parser tsx app components lib --dry
@@ -393,6 +295,7 @@ npx jscodeshift -t scripts/codemods/breakpoint-migration.js --parser tsx app com
 **File:** `scripts/codemods/console-migration.js`
 
 **Transformations:**
+
 - `console.log(...)` → `logger.dev(...)`
 - `console.error(...)` → `logger.error(...)`
 - `console.warn(...)` → `logger.warn(...)`
@@ -400,11 +303,13 @@ npx jscodeshift -t scripts/codemods/breakpoint-migration.js --parser tsx app com
 - `console.debug(...)` → `logger.debug(...)`
 
 **Features:**
+
 - Automatically adds `import { logger } from '@/lib/logger';` if not present
 - Preserves all arguments and call structure
 - Detects existing logger imports to avoid duplicates
 
 **Usage:**
+
 ```bash
 # Dry-run (preview changes)
 npm run codemod:console
@@ -423,41 +328,48 @@ npm run codemod:all
 ### **Codemod Execution Workflow**
 
 **Step 1: Preview Changes**
+
 ```bash
 npm run codemod:breakpoints
 npm run codemod:console
 ```
 
 **Step 2: Review Output**
+
 - Check the diff/preview output
 - Verify transformations look correct
 - Note any files that will be modified
 
 **Step 3: Apply Changes**
+
 ```bash
 npm run codemod:breakpoints:write
 npm run codemod:console:write
 ```
 
 **Step 4: Verify & Test**
+
 - Run `npm run lint` to check for issues
 - Run `npm run type-check` to verify TypeScript
 - Test affected functionality
 - Format code: `npm run format`
 
 **Step 5: Commit**
+
 - Commit with `refactor:` prefix
 - Example: `refactor: migrate breakpoints and console calls via codemod`
 
 ### **Technical Details**
 
 **Dependencies:**
+
 - `jscodeshift` - AST transformation tool
 - `@types/jscodeshift` - TypeScript types
 
 **Parser:** Uses `tsx` parser for TypeScript/TSX file support
 
 **File Locations:**
+
 - `scripts/codemods/breakpoint-migration.js`
 - `scripts/codemods/console-migration.js`
 
@@ -476,12 +388,14 @@ npm run codemod:console:write
 ### **Component Refactoring Patterns**
 
 **1. Extract Sub-Components:**
+
 - Extract logical UI sections into separate components
 - Example: Extract `<TableHeader>`, `<TableRow>`, `<TableFooter>` from large table component
 - Keep components focused on single responsibility
 - Share state via props or context (avoid prop drilling)
 
 **2. Extract Custom Hooks:**
+
 - Extract reusable state logic into custom hooks
 - Example: Extract form validation logic → `useFormValidation`
 - Extract data fetching logic → `useDataFetching`
@@ -489,12 +403,14 @@ npm run codemod:console:write
 - Hooks should be pure and testable
 
 **3. Extract Type Definitions:**
+
 - Move complex interfaces/types to `.types.ts` files
 - Example: `types.ts`, `interfaces.ts`, `api-types.ts`
 - Keep types co-located with related code when possible
 - Export types from index files for easy imports
 
 **4. Extract Utility Functions:**
+
 - Move pure functions to utility files
 - Example: `utils/formatters.ts`, `utils/validators.ts`, `utils/transformers.ts`
 - Keep utilities pure (no side effects)
@@ -503,24 +419,28 @@ npm run codemod:console:write
 ### **API Route Refactoring Patterns**
 
 **1. Extract Helper Functions:**
+
 - Move business logic to `helpers/` subdirectory
 - Example: `helpers/validateRequest.ts`, `helpers/buildQuery.ts`, `helpers/formatResponse.ts`
 - Keep route handlers thin (request/response only)
 - Test helpers independently
 
 **2. Extract Validation Logic:**
+
 - Create separate validators for request validation
 - Use Zod schemas for type-safe validation
 - Example: `helpers/validateRequest.ts` with Zod schema
 - Return clear validation error messages
 
 **3. Extract Error Handlers:**
+
 - Create consistent error handling helpers
 - Use `ApiErrorHandler` for standardized errors
 - Example: `helpers/handleError.ts` with error mapping
 - Log errors with context (requestId, endpoint, user)
 
 **4. Extract Query Builders:**
+
 - Create reusable query builder functions
 - Example: `helpers/buildQuery.ts` for complex queries
 - Keep queries type-safe with TypeScript
@@ -529,6 +449,7 @@ npm run codemod:console:write
 **Refactoring Checklist:**
 
 When refactoring any file, ensure:
+
 - [ ] All extracted code is properly typed
 - [ ] Error handling is consistent
 - [ ] JSDoc documentation is added
@@ -541,13 +462,14 @@ When refactoring any file, ensure:
 **📚 Comprehensive Refactoring Guide:**
 
 For detailed refactoring patterns, step-by-step instructions, decision trees, and real-world examples, see:
+
 - **`docs/FILE_SIZE_REFACTORING_GUIDE.md`** - Complete guide with 5 proven patterns:
   1. Extract Helper Functions (Utilities & API Routes)
   2. Extract Custom Hooks (React Components)
   3. Extract Sub-Components (Large Components)
   4. Extract API Route Helpers
   5. Consolidate Code (Minor Overages)
-  
+
   Includes checklists, common pitfalls, solutions, and statistics from January 2025 refactoring (16 files fixed, 40+ new files created).
 
 ### **Code Duplication Reduction**
@@ -555,21 +477,25 @@ For detailed refactoring patterns, step-by-step instructions, decision trees, an
 **MANDATORY:** Eliminate code duplication using these patterns:
 
 **1. Extract Common Logic:**
+
 - Identify repeated patterns across files
 - Extract to shared utilities or hooks
 - Example: Form validation, error handling, data transformation
 
 **2. Create Reusable Components:**
+
 - Extract repeated UI patterns to components
 - Example: Reusable `<Modal>`, `<Table>`, `<Form>` components
 - Use composition over duplication
 
 **3. Use Higher-Order Functions:**
+
 - Create wrapper functions for common patterns
 - Example: `withErrorHandling`, `withAuth`, `withValidation`
 - Reduces boilerplate code
 
 **4. Shared Constants:**
+
 - Extract magic numbers/strings to constants
 - Example: `constants/api-endpoints.ts`, `constants/validation-rules.ts`
 - Use enums for fixed sets of values
@@ -579,6 +505,7 @@ For detailed refactoring patterns, step-by-step instructions, decision trees, an
 **MANDATORY:** When refactoring, consider performance implications.
 
 **1. Extract Memoized Components:**
+
 ```typescript
 // ✅ GOOD: Extract and memoize list items
 const ListItem = memo(({ item, onSelect }: ListItemProps) => {
@@ -592,6 +519,7 @@ const ExpensiveChart = memo(({ data }: ChartProps) => {
 ```
 
 **2. Optimize Hook Dependencies:**
+
 ```typescript
 // ✅ GOOD: Stable dependencies
 const stableCallback = useCallback(() => {
@@ -609,6 +537,7 @@ const unstableCallback = useCallback(() => {
 ```
 
 **3. Lazy Load During Refactoring:**
+
 ```typescript
 // When extracting large components, consider lazy loading
 const ExtractedComponent = dynamic(() => import('./ExtractedComponent'), {
@@ -618,6 +547,7 @@ const ExtractedComponent = dynamic(() => import('./ExtractedComponent'), {
 ```
 
 **See Also:**
+
 - `operations.mdc` (Speed Optimization & Memoization Standards) - Comprehensive memoization patterns
 - `development.mdc` (File Refactoring Standards) - Mandatory file size limits and refactoring triggers
 
@@ -626,6 +556,7 @@ const ExtractedComponent = dynamic(() => import('./ExtractedComponent'), {
 **Cleanup System:** See `cleanup.mdc` for comprehensive automated enforcement of all development standards.
 
 **Available Checks:**
+
 - File sizes: `npm run cleanup:check` (validates file size limits)
 - Console.log migration: `npm run cleanup:check` (detects console usage)
 - Breakpoints: `npm run cleanup:check` (validates custom breakpoints)
@@ -636,6 +567,7 @@ const ExtractedComponent = dynamic(() => import('./ExtractedComponent'), {
 - Naming conventions: `npm run cleanup:check` (validates naming)
 
 **Available Fixes:**
+
 - Breakpoints: `npm run cleanup:fix` (auto-migrates via codemod)
 - Console.log: `npm run cleanup:fix` (auto-migrates via codemod)
 - Unused imports: `npm run cleanup:fix` (auto-removes via ESLint)
@@ -655,6 +587,7 @@ const ExtractedComponent = dynamic(() => import('./ExtractedComponent'), {
 **Command:** `npm run lint:filesize`
 
 Enforces file size limits to maintain code quality:
+
 - **Page Components:** Maximum 500 lines
 - **Complex Components:** Maximum 300 lines
 - **API Routes:** Maximum 200 lines
@@ -669,6 +602,7 @@ Enforces file size limits to maintain code quality:
 **Command:** `npm run detect-breakpoints`
 
 Analyzes breakpoint usage across the codebase:
+
 - Identifies active breakpoints (used in project)
 - Identifies unused breakpoints (defined but not used)
 - Identifies rogue breakpoints (used but not defined)
@@ -683,6 +617,7 @@ Analyzes breakpoint usage across the codebase:
 Automatically generates `CHANGELOG.md` from git commits using Conventional Commits format.
 
 **Commit Types Supported:**
+
 - 🚀 `feat:` - New features
 - 🐛 `fix:` - Bug fixes
 - 📚 `docs:` - Documentation
@@ -700,11 +635,13 @@ Automatically generates `CHANGELOG.md` from git commits using Conventional Commi
 #### **Screenshot Management**
 
 **Scripts:**
+
 - `scripts/add-screenshots.sh` - Add new screenshots
 - `scripts/copy-screenshots.sh` - Copy screenshots from source
 - `scripts/replace-screenshots.sh` - Replace existing screenshots
 
 **Usage:**
+
 ```bash
 bash scripts/add-screenshots.sh
 bash scripts/copy-screenshots.sh
@@ -719,6 +656,7 @@ bash scripts/replace-screenshots.sh
 **Command:** `node scripts/optimize-images.js`
 
 Optimizes images in `public/images/` and `public/icons/` directories:
+
 - Converts to WebP format
 - Compresses PNG/JPEG images
 - Generates responsive sizes
@@ -729,629 +667,11 @@ Optimizes images in `public/images/` and `public/icons/` directories:
 
 For complete documentation of all scripts, see `docs/SCRIPTS.md`.
 
-## 🎨 **Cyber Carrot Design System**
+## 🎨 **Design System Reference**
 
-### **Color Palette**
+**See `design.mdc` for the complete Cyber Carrot Design System** — colors, typography, component guidelines (containers, buttons, tables, checkboxes, icons, z-index hierarchy), animation system, landing page styles, mobile optimization, and responsive breakpoints.
 
-```css
---primary: #29e7cd /* Electric Cyan - Primary Actions */ --secondary: #3b82f6
-  /* Blue - Secondary Actions */ --accent: #d925c7 /* Vibrant Magenta - Accent Elements */
-  --tertiary: #ff6b00 /* Cyber Orange - Warm Accents & Carrot Theme */
-  --background: #0a0a0a /* Dark background */ --foreground: #ffffff /* White text */
-  --muted: #1f1f1f /* Dark gray - Cards & Containers */ --border: #2a2a2a
-  /* Border gray - Subtle borders */ --surface: #2a2a2a /* Surface color - Elevated elements */
-  --surface-variant: #2a2a2a/30 /* Surface variant - Subtle backgrounds */;
-```
-
-**Cyber Carrot Gradient Pattern:**
-- **Gradient Borders:** `bg-gradient-to-r from-[#29E7CD]/20 via-[#FF6B00]/20 via-[#D925C7]/20 to-[#29E7CD]/20 p-[1px]`
-- **Creates:** Glowing gradient border effect (Cyan → Orange → Magenta → Cyan)
-- **Used In:** Popups, modals, dropdowns, elevated components
-
-### **Cyber Carrot Typography**
-
-- **Primary Font:** Geist Sans (Google Fonts)
-- **Monospace:** Geist Mono (for technical content)
-- **Hierarchy:**
-  - Display Large: 4xl-6xl (Page titles)
-  - Headline Large: 2xl-3xl (Section headers)
-  - Title Large: xl-2xl (Card titles)
-  - Body Large: base-lg (Main content)
-  - Label Large: sm (Labels & metadata)
-  - Label Small: xs (Captions & fine print)
-
-### **Cyber Carrot Component Guidelines**
-
-#### **Containers & Cards**
-
-- **Border Radius:** `rounded-3xl` for main containers, `rounded-2xl` for cards
-- **Elevation:** `shadow-lg` with `border border-[#2a2a2a]` for depth
-- **Background:** `bg-[#1f1f1f]` for main containers, `bg-[#2a2a2a]/30` for cards
-- **Gradients:** Subtle gradients for headers and accents
-
-#### **Buttons & Actions**
-
-- **Primary Buttons:** `bg-gradient-to-r from-[#29E7CD] to-[#D925C7]` with `rounded-2xl`
-- **Secondary Buttons:** `bg-[#29E7CD]/10` with `hover:bg-[#29E7CD]/20`
-- **Icon Buttons:** `rounded-full` with `p-2` and hover scaling
-- **Hover Effects:** `hover:shadow-xl` and `transition-all duration-200`
-
-#### **Data Tables**
-
-- **Table Container:** `overflow-hidden rounded-3xl border border-[#2a2a2a] bg-[#1f1f1f]`
-- **Table Headers:** `sticky top-0 z-10 bg-gradient-to-r from-[#2a2a2a]/50 to-[#2a2a2a]/20`
-- **Header Cells:** `px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-300 uppercase`
-- **Table Body:** `divide-y divide-[#2a2a2a] bg-[#1f1f1f]`
-- **Table Rows:** `transition-colors hover:bg-[#2a2a2a]/20`
-- **Table Cells:** `px-6 py-4 text-sm text-white` (or `text-gray-300` for secondary content)
-- **Pagination:** Use `TablePagination` component from `components/ui/TablePagination.tsx` - place at both top and bottom of tables
-- **Responsive:** Tables use `desktop:` (1025px) breakpoint - mobile/tablet (<1025px) shows card layout, desktop (≥1025px) shows table
-- **Progress Bars:** Gradient bars for visual data representation
-- **Chips:** `rounded-full` with `bg-[#29E7CD]/10` and `border border-[#29E7CD]/20`
-
-**Standard Table Structure:**
-
-```tsx
-<div className="overflow-hidden rounded-3xl border border-[#2a2a2a] bg-[#1f1f1f]">
-  <table className="min-w-full divide-y divide-[#2a2a2a]">
-    <thead className="sticky top-0 z-10 bg-gradient-to-r from-[#2a2a2a]/50 to-[#2a2a2a]/20">
-      <tr>
-        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-300">
-          Header
-        </th>
-      </tr>
-    </thead>
-    <tbody className="divide-y divide-[#2a2a2a] bg-[#1f1f1f]">
-      <tr className="transition-colors hover:bg-[#2a2a2a]/20">
-        <td className="px-6 py-4 text-sm text-white">Content</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-```
-
-**Pagination Pattern:**
-
-```tsx
-<TablePagination page={page} totalPages={totalPages} total={total} onPageChange={setPage} className="mb-4" />
-<TableComponent data={paginatedData} />
-<TablePagination page={page} totalPages={totalPages} total={total} onPageChange={setPage} className="mt-4" />
-```
-
-#### **Forms & Inputs**
-
-- **Input Fields:** `border border-[#2a2a2a]` with `focus:ring-2 focus:ring-[#29E7CD]`
-- **Focus States:** Cyan ring with smooth transitions
-- **Validation:** Color-coded feedback with Cyber Carrot styling
-
-#### **Selection Controls & Checkboxes**
-
-- **Modern Button-Style Toggle:** All selection checkboxes use a button-style toggle design, not native HTML checkboxes
-- **Unselected State:** Empty box with `border border-[#2a2a2a]` and `bg-[#0a0a0a]`
-- **Selected State:** Checkmark icon (`M5 13l4 4L19 7`) in cyan (`text-[#29E7CD]`)
-- **Hover Effects:** Border highlights on hover (`hover:border-[#29E7CD]/50`)
-- **Transitions:** Smooth 200ms transitions for all state changes
-- **Accessibility:** Use `<button>` elements with proper `aria-label` attributes, not `<input type="checkbox">`
-- **Implementation Pattern:**
-
-```typescript
-<button
-  onClick={() => handleToggle(id)}
-  className="flex items-center justify-center transition-colors hover:text-[#29E7CD]"
-  aria-label={`${isSelected ? 'Deselect' : 'Select'} item ${name}`}
->
-  {isSelected ? (
-    <svg className="h-4 w-4 text-[#29E7CD]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-    </svg>
-  ) : (
-    <div className="h-4 w-4 rounded border border-[#2a2a2a] bg-[#0a0a0a] transition-colors hover:border-[#29E7CD]/50" />
-  )}
-</button>
-```
-
-- **Where Used:** Table row selection, bulk selection, card selection, import preview selection
-- **Components Updated:** `IngredientTableWithFilters`, `IngredientTableRow`, `RecipeTable`, `RecipeCard`, `CSVImportModal`
-
-#### **Icon Standards**
-
-- **Icon Library:** Use Lucide React icons exclusively (no emoji icons)
-- **Icon Component:** Use the standardized `Icon` component from `components/ui/Icon.tsx`
-- **Icon Sizes:** `xs` (12px), `sm` (16px), `md` (20px - default), `lg` (24px), `xl` (32px)
-- **Icon Colors:** Inherit from parent text color or use theme colors (`text-[#29E7CD]`, `text-gray-400`)
-- **Implementation Pattern:**
-
-```typescript
-import { Icon } from '@/components/ui/Icon';
-import { Zap, Store, MapPin } from 'lucide-react';
-
-// Basic usage with size
-<Icon icon={Zap} size="sm" className="text-[#29E7CD]" />
-
-// With accessibility (decorative - auto-hides from screen readers)
-<Icon icon={Store} size="md" aria-hidden="true" />
-
-// With accessibility (interactive - includes label)
-<Icon icon={MapPin} size="lg" aria-label="Filter by storage location" />
-```
-
-- **Automatic Accessibility:** The Icon component automatically sets `aria-hidden` when no `aria-label` is provided, and sets `role="img"` when `aria-label` is present
-- **Common Icons:**
-  - **Actions:** `Zap` (bulk actions), `Trash2` (delete), `Store` (supplier), `MapPin` (storage/location), `Target` (filter)
-  - **Navigation:** `ChevronDown` (dropdowns), `Type` (sort by name), `Tag` (sort by brand), `DollarSign` (sort by cost), `Package` (sort by stock)
-- **Migration Notes:**
-  - **Bulk Actions Icons:** All bulk action buttons use Lucide icons (replaced emoji icons: ⚡→`Zap`, 🗑️→`Trash2`, 🏪→`Store`, 📍→`MapPin`, 🎯→`Target`)
-  - **Filter Dropdown Icons:** Supplier filters use `Store`, Storage filters use `MapPin` (replaced emoji icons)
-- **Component Location:** `components/ui/Icon.tsx` - Standardized wrapper for consistent sizing and accessibility
-- **Migration Status:** All components use Icon wrapper - direct lucide-react imports are only for icon component references, not direct usage
-
-#### **Z-Index Hierarchy**
-
-- **Modals:** `z-[80]` - Highest priority overlays (delete confirmations, forms, etc.)
-- **Search Modal:** `z-[75]` - Search interface overlay
-- **FAB (Floating Action Button):** `z-[70]` - Mobile quick actions button
-- **More Drawer:** `z-[65]` - Mobile drawer overlay
-- **More Drawer Backdrop:** `z-[60]` - Backdrop behind drawer
-- **Bottom Nav:** `z-[60]` - Mobile bottom navigation bar
-- **Bulk Actions Dropdown:** `z-[60]` - Action menus above content
-- **Sidebar:** `z-[60]` - Navigation drawer
-- **Bulk Actions Backdrop:** `z-[55]` - Blocks interactions behind dropdowns
-- **Sort/Filter Dropdowns:** `z-50` - Filter and sort menus
-- **Header:** `z-50` - Fixed navigation header
-- **Filter Bar:** `z-30` - Sticky filter bar above table content
-- **Persistent Sidebar:** `z-40` - Desktop sidebar navigation
-
-**Implementation Note:** Always ensure dropdowns and modals have proper z-index values to prevent clipping behind other elements. Use backdrop divs with appropriate z-index to block interactions when dropdowns are open.
-
-### **Material Design 3 Animation System**
-
-```css
-/* Keyframe Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-```
-
-### **Material Design 3 Layout Patterns**
-
-#### **Mobile-First Cards**
-
-- **Card Structure:** Header with title/brand, content grid, action buttons
-- **Staggered Animations:** `animationDelay: ${index * 50}ms`
-- **Touch Targets:** Minimum 44px with proper spacing
-- **Hover States:** `group-hover:text-[#29E7CD]` for interactive elements
-
-#### **Desktop Data Tables**
-
-- **Avatar Icons:** `w-10 h-10 rounded-full` with gradient backgrounds
-- **Progress Indicators:** Visual bars for percentages and metrics
-- **Action Buttons:** Circular buttons with icon scaling on hover
-- **Row Interactions:** Smooth hover effects with color transitions
-
-#### **Empty States**
-
-- **Large Icons:** `w-20 h-20` with gradient backgrounds
-- **Contextual Messaging:** Different messages for different states
-- **Call-to-Actions:** Prominent buttons with Cyber Carrot styling
-
-### **Material Design 3 UX Guidelines**
-
-- **Loading Skeletons:** Comprehensive skeleton system with multiple variants following Cyber Carrot design principles
-- **Mobile Navigation:** Cyber Carrot navigation rail with proper spacing
-- **Accessibility:** Focus rings, ARIA labels, keyboard navigation
-- **Smooth Transitions:** 200-300ms transitions for all interactions
-- **Touch Targets:** Minimum 44px for mobile, proper spacing
-- **Visual Hierarchy:** Clear distinction between primary and secondary actions
-
-### **Loading Skeleton System Architecture**
-
-- **Base Component:** `LoadingSkeleton` with variant prop for different content types
-- **Specialized Components:** `TableSkeleton`, `FormSkeleton`, `ChartSkeleton` for specific use cases
-- **Page-Level:** `PageSkeleton` for full-page loading states
-- **Landing Page:** `HeroSkeleton`, `PricingSkeleton` for marketing page
-- **Dynamic Imports:** Proper skeleton components replace inline animate-pulse divs
-- **Positioning:** All skeletons properly centered with `max-w-7xl mx-auto` and Cyber Carrot spacing
-- **Styling:** Consistent colors (`bg-[#2a2a2a]`), border radius (`rounded-xl`, `rounded-2xl`, `rounded-3xl`), and animations (`animate-pulse`)
-
-## 📊 **Analytics & Tracking**
-
-### **Required Tracking Events**
-
-- **Page Views:** All page loads with metadata
-- **User Engagement:** Scroll depth, time on page, section views
-- **Conversion Events:** CTA clicks, form submissions, purchases
-- **Performance Metrics:** Core Web Vitals, loading times
-- **A/B Testing:** Variant assignments, performance comparisons
-
-### **Data Layer Structure**
-
-```typescript
-interface TrackingEvent {
-  event: string;
-  event_category: string;
-  event_label?: string;
-  event_value?: number;
-  page_title: string;
-  page_location: string;
-  page_path: string;
-  timestamp: number;
-  user_id?: string;
-  session_id: string;
-}
-```
-
-### **GTM Configuration**
-
-- **Container ID:** GTM-WQMV22RD
-- **GA4 Measurement ID:** G-W1D5LQXGJT
-- **Data Layer:** Automatic page tracking, custom event support
-- **Triggers:** Page views, custom events, user interactions
-
-## 🚀 **Performance Requirements**
-
-### **Core Web Vitals Targets**
-
-- **LCP (Largest Contentful Paint):** < 2.5 seconds
-- **FID (First Input Delay):** < 100 milliseconds
-- **CLS (Cumulative Layout Shift):** < 0.1
-
-### **Loading Performance**
-
-- **First Contentful Paint:** < 1.8 seconds
-- **Time to Interactive:** < 3.8 seconds
-- **Total Bundle Size:** < 200KB (gzipped)
-
-### **Optimization Strategies**
-
-- **Image Optimization:** next/image with proper sizing
-- **Code Splitting:** Dynamic imports for non-critical components
-- **Lazy Loading:** Images, components, and third-party scripts
-- **Caching:** Static generation, CDN optimization
-
-### **Speed Performance Improvements**
-
-#### **Batch Fetching Infrastructure**
-
-The application uses batch fetching and parallelization to eliminate N+1 query problems and sequential loading bottlenecks:
-
-- **Batch Utilities**: `lib/api/batch-utils.ts` provides reusable batch fetching helpers
-  - `chunkArray()`: Splits large arrays into manageable chunks
-  - `fetchInParallel()`: Executes multiple requests in parallel with error handling
-  - `fetchInBatches()`: Handles batched requests with automatic chunking
-  - `groupBy()`: Groups results by key function
-  - `MAX_BATCH_SIZE`: 100 items per batch (PostgreSQL IN clause limit)
-
-- **Parallel Fetch Hook**: `hooks/useParallelFetch.ts` provides reusable parallel data fetching
-  - Individual loading states per request
-  - Error handling per request
-  - Automatic retry and fallback mechanisms
-
-#### **Caching & Prefetching Infrastructure**
-
-The application uses sessionStorage-based caching and intelligent prefetching to dramatically improve perceived performance:
-
-- **Generic Data Cache**: `lib/cache/data-cache.ts` provides reusable caching utilities
-  - `cacheData(key, data, expiryMs)`: Cache any data type with configurable expiry (default 5 minutes)
-  - `getCachedData(key)`: Retrieve cached data if valid (not expired)
-  - `clearCache(key)`: Clear cache for specific key
-  - `clearAllCaches()`: Clear all application caches
-  - `prefetchApi(endpoint)`: Prefetch API endpoint using link prefetch
-  - `prefetchApis(endpoints)`: Prefetch multiple endpoints in parallel
-
-- **Prefetch Configuration**: `lib/cache/prefetch-config.ts` maps routes to API endpoints
-  - Centralized configuration for all navigation routes
-  - `prefetchRoute(route)`: Automatically prefetches all endpoints for a route
-  - Prefetch triggers on navigation link hover for instant page loads
-
-- **Page-Specific Caching**:
-  - **Dashboard**: Caches stats, temperature logs, and equipment data
-  - **Recipes**: Caches recipe list for instant display
-  - **Ingredients**: Caches first page of ingredients
-  - **Performance**: Caches performance analysis data
-  - **Temperature Logs**: Caches first page with default filters
-
-- **Instant Display Pattern**: All pages follow this pattern:
-  1. Initialize state with cached data (if available) for instant display
-  2. Fetch fresh data in background
-  3. Update UI with fresh data when available
-  4. Cache new data for next visit
-
-- **Navigation Prefetching**:
-  - Sidebar links prefetch on hover
-  - Search modal links prefetch on hover
-  - Routes automatically prefetch their configured API endpoints
-
-#### **Performance Optimization Patterns**
-
-1. **Batch API Endpoints**: Create batch endpoints for fetching multiple related items
-   - Example: `/api/recipes/ingredients/batch` accepts multiple recipe IDs
-   - Single Supabase query with `.in()` clause instead of N sequential queries
-   - Groups results by key for easy consumption
-
-2. **Parallel Fetching**: Use `Promise.all()` for independent requests
-   - Dashboard fetches stats and temperature data in parallel
-   - Recipe price calculations use parallel individual fetches as fallback
-   - Reduces total fetch time from sequential (sum) to parallel (max)
-
-3. **Non-Blocking Loading**: Show content immediately, calculate in background
-   - Recipes page shows recipe list immediately
-   - Price calculations happen asynchronously in background
-   - Progressive loading: prices appear as they're calculated
-
-4. **Fallback Mechanisms**: Always have fallback strategies
-   - Batch fetch fails → fallback to parallel individual fetches
-   - Parallel fetches fail → graceful error handling per item
-   - Ensures functionality even if optimizations fail
-
-5. **Caching Strategy**: Use sessionStorage for instant display
-   - Cache first page of paginated data for instant display
-   - Cache dashboard stats and frequently accessed data
-   - Show cached data immediately, refresh in background
-   - 5-minute default expiry (configurable per cache key)
-
-6. **Prefetching Strategy**: Prefetch on user intent
-   - Prefetch API endpoints on navigation link hover
-   - Prefetch on mount for likely-to-be-accessed pages
-   - Use link prefetch for browser-level optimization
-   - Avoid prefetching when data changes frequently
-   - **Prefetch Requirement**: When adding new webapp routes, add corresponding entries to `lib/cache/prefetch-config.ts` PREFETCH_MAP
-
-7. **Light API Pattern**: When building read-only features (display, print), check if the API supports a lightweight query param to skip expensive enrichment
-   - Example: `GET /api/menus/[id]?locked=1` skips per-item price/dietary enrichment for locked menu display and print
-   - Use light API for MenuList print when `menu.is_locked`; MenuCard prefetches on hover for locked menus
-
-8. **Memoization Strategy**: Use React memoization to prevent unnecessary re-renders
-   - Use `React.memo()` for components that receive stable props
-   - Use `useMemo()` for expensive computations (filtering, sorting, transforming)
-   - Use `useCallback()` for functions passed as props to memoized components
-   - See `operations.mdc` (Speed Optimization & Memoization Standards) for comprehensive memoization patterns
-
-**Memoization Decision Tree:**
-
-**Should I memoize this?**
-
-1. **Is it a React component?**
-   - ✅ Receives stable props → Use `React.memo()`
-   - ✅ List item in large list → Use `React.memo()` with custom comparison
-   - ❌ Simple component, no performance issues → Skip memoization
-
-2. **Is it an expensive computation?**
-   - ✅ Filtering/sorting large arrays (> 100 items) → Use `useMemo()`
-   - ✅ Complex transformations → Use `useMemo()`
-   - ❌ Simple calculation → Skip memoization
-
-3. **Is it a function passed as prop?**
-   - ✅ To memoized component → Use `useCallback()`
-   - ✅ In useEffect dependency → Use `useCallback()`
-   - ❌ Used inline only → Skip memoization
-
-**See Also:**
-- `operations.mdc` (Speed Optimization & Memoization Standards) - Complete memoization guide with examples
-- `development.mdc` (Performance-Aware Refactoring) - Memoization in refactoring context
-
-#### **Performance Improvements Achieved**
-
-- **Recipes Page**: 80-90% reduction in load time (10s → 1-2s with 14 recipes)
-  - Before: 14 sequential API calls (~10 seconds)
-  - After: 1 batch API call or 14 parallel calls (~1-2 seconds)
-  - Non-blocking: Recipes list displays immediately
-  - Caching: Instant display from cache, then background refresh
-
-- **Dashboard**: 50% reduction in load time (2 sequential → 1 parallel)
-  - Before: Stats fetch → Temperature fetch (sequential)
-  - After: Stats + Temperature fetch (parallel)
-  - Caching: Instant display from cache, then background refresh
-
-- **Perceived Performance**: Near-instant page loads with caching
-  - Pages show cached data immediately (< 50ms)
-  - Fresh data loads in background (~1-2 seconds)
-  - Users see content instantly while data refreshes
-  - Navigation prefetching makes subsequent page loads instant
-
-#### **Optimistic Updates Pattern**
-
-Optimistic updates provide instant UI feedback by updating the UI immediately when a user performs an action, before the server responds. This dramatically improves perceived performance.
-
-**Standard Optimistic Update Pattern:**
-
-```typescript
-// 1. Store original state for rollback
-const originalState = [...currentState];
-
-// 2. Optimistically update UI immediately
-setState(optimisticUpdate);
-
-// 3. Make API call in background
-try {
-  const response = await fetch('/api/endpoint', { method: 'DELETE' });
-  const result = await response.json();
-
-  if (response.ok) {
-    // Success - show notification, refresh stats in background if needed
-    showSuccess('Item deleted');
-    refreshStatistics().catch(err => logger.error(err));
-  } else {
-    // Error - revert optimistic update
-    setState(originalState);
-    showError(result.error || 'Operation failed');
-  }
-} catch (err) {
-  // Error - revert optimistic update
-  setState(originalState);
-  showError('Operation failed');
-}
-```
-
-**Key Principles:**
-
-1. **Store Original State**: Always store a copy of the current state before making optimistic updates
-2. **Update UI Immediately**: Apply the optimistic change to the UI before the API call completes
-3. **Revert on Error**: If the API call fails, restore the original state
-4. **Background Refresh**: Optionally refresh statistics or related data in the background (non-blocking)
-5. **User Feedback**: Show success/error notifications using the notification system
-
-**Reusable Utilities:**
-
-- **`lib/optimistic-updates.ts`**: Generic optimistic update functions for common CRUD operations
-  - `createOptimisticDelete<T>` - Generic delete with revert capability
-  - `createOptimisticUpdate<T>` - Generic update with revert capability
-  - `createOptimisticCreate<T>` - Generic create with revert capability
-  - `createOptimisticReorder<T>` - Generic reorder with revert capability
-
-- **`hooks/useOptimisticMutation.ts`**: Reusable hook for optimistic mutations with automatic rollback
-
-**Best Practices:**
-
-1. Always implement rollback logic for error cases
-2. Use temporary IDs for create operations (replace with server ID on success)
-3. Refresh statistics in background (non-blocking) after successful mutations
-4. Never show loading states for mutations - UI updates should be instant
-5. Use the notification system (`useNotification`) for user feedback
-6. Replace native `confirm()` with `ConfirmDialog` for consistent styling
-
-**See Also:**
-- `operations.mdc` (Performance Standards) - Performance targets for mutation operations
-- `implementation.mdc` (Optimistic Updates Implementation Pattern) - Detailed implementation examples
-
-#### **Best Practices for Future Development**
-
-1. Always batch related fetches using batch endpoints
-2. Use parallel fetching with `Promise.all()` for independent requests
-3. Show UI immediately, calculate expensive operations in background
-4. Implement fallbacks for all optimizations
-5. Cache first page data using sessionStorage for instant display
-6. Prefetch API endpoints on navigation link hover
-7. Initialize state with cached data using `getCachedData()` in useState
-8. Cache after fetch: always call `cacheData()` after successful data fetch
-9. **Use optimistic updates for all CRUD operations** - Eliminate loading delays
-10. **Never call `fetchData()` after successful mutations** - Rely on optimistic updates
-11. Monitor performance using browser DevTools
-12. Consider pagination for large datasets
-13. **Cache-first for list pages**: When building new list/list-detail pages, use the instant display pattern (getCachedData on init, fetch in background, cacheData on success)
-14. **Prefetch requirement**: When adding new webapp routes, add corresponding entries to `lib/cache/prefetch-config.ts` PREFETCH_MAP
-
-**Implementation Guidelines:** Identify N+1 patterns, create batch endpoints, use parallel hooks, implement caching, add prefetching routes, implement optimistic updates, test performance, document patterns.
-
-**Example Caching Pattern:**
-
-```typescript
-// Initialize with cached data
-const [data, setData] = useState(() => getCachedData('my_data') || []);
-
-useEffect(() => {
-  // Fetch fresh data
-  fetch('/api/my-data')
-    .then(res => res.json())
-    .then(newData => {
-      setData(newData);
-      cacheData('my_data', newData); // Cache for next visit
-    });
-}, []);
-```
-
-**Example Prefetching Pattern:**
-
-```typescript
-// In prefetch-config.ts
-export const PREFETCH_MAP: Record<string, string[]> = {
-  '/webapp/my-page': ['/api/my-data'],
-};
-
-// In navigation component
-<Link href="/webapp/my-page" onMouseEnter={() => prefetchRoute('/webapp/my-page')}>
-  My Page
-</Link>
-```
-
-## 🔍 **SEO Requirements**
-
-### **Meta Tags**
-
-- **Title:** Under 60 characters, includes primary keyword
-- **Description:** Under 160 characters, compelling and keyword-rich
-- **Keywords:** Relevant long-tail keywords for restaurant profitability
-- **Open Graph:** Social media optimization with proper images
-
-### **Structured Data**
-
-- **Software Application:** Main product schema
-- **FAQ:** Question and answer markup
-- **Organization:** Company information
-- **Breadcrumb:** Navigation structure
-
-### **Content Strategy**
-
-- **Primary Keywords:** restaurant COGS, menu profitability, gross profit optimization
-- **Long-tail Keywords:** Australian café profitability, food truck cost analysis
-- **Content Types:** Blog posts, case studies, video content, resource guides
-
-## 💰 **Conversion Optimization**
-
-### **Lead Generation**
-
-- **Primary CTA:** "Get PrepFlow Now" (purchase)
-- **Secondary CTA:** "Watch the 2-min demo" (engagement)
-- **Lead Magnet:** "Get the sample sheet (free)" (email capture)
-- **Exit Intent:** Popup with lead magnet offer
-
-### **Trust Elements**
-
-- **Social Proof:** Customer testimonials with specific results
-- **Risk Reversal:** 7-day refund policy, no lock-in
-- **Security:** SSL certificates, secure checkout badges
-- **Transparency:** Clear pricing, no hidden fees
-
-### **Urgency & Scarcity**
-
-- **Limited Time:** Launch discount countdown
-- **Social Proof:** Real-time signup notifications
-- **FOMO Triggers:** "Don't miss the margin makeover"
-- **Exclusivity:** "Limited founder pricing"
-
-## 🧪 **A/B Testing Strategy**
-
-### **Test Variables**
-
-- **Headlines:** Different value propositions
-- **CTAs:** Button text, colors, positioning
-- **Social Proof:** Testimonial placement, content
-- **Pricing:** Price points, discount amounts
-- **Layout:** Section ordering, content structure
-
-### **Testing Framework**
-
-- **Traffic Split:** 25% each for 4 variants
-- **Statistical Significance:** 95% confidence level
-- **Metrics:** Conversion rate, engagement, revenue
-- **Duration:** Minimum 2 weeks for reliable results
+**See `operations.mdc` for all performance and analytics standards** — Core Web Vitals targets, caching/prefetching patterns, batch fetching, analytics (GTM/GA4), SEO, and conversion optimization.
 
 ## 🔧 **Development Workflow**
 
@@ -1373,47 +693,31 @@ export const PREFETCH_MAP: Record<string, string[]> = {
 
 **NEVER work directly on main branch for improvements!**
 
-#### **2. Nachotaco Area Protection (MANDATORY)**
+#### **2. CurbOS Area Protection (MANDATORY)**
 
-**MANDATORY:** The `app/nachotaco/` directory is a **protected area** that is **completely excluded from all scans, checks, and optimizations**.
+**MANDATORY:** The `app/curbos/` and `app/curbos-import/` directories are **protected areas** excluded from all scans, checks, and optimizations.
 
 **Protection Rules:**
-- ✅ Files in `app/nachotaco/` are tracked in git and will be pushed/committed normally
-- ❌ **NEVER modify files in `app/nachotaco/`** - Pre-commit hook blocks all modifications
-- ❌ **NEVER stage changes to `app/nachotaco/`** - Commit will be automatically blocked
-- ⚠️ **Emergency bypass only:** `ALLOW_NACHOTACO_MODIFY=1 git commit ...` (use only in true emergencies)
+
+- ✅ Files in `app/curbos/` are tracked in git and committed normally
+- ❌ **NEVER modify files in `app/curbos/`** - Pre-commit hook blocks modifications
+- ❌ **NEVER stage changes to `app/curbos/`** - Commit will be automatically blocked
+- ⚠️ **Emergency bypass only:** `ALLOW_CURBOS_MODIFY=1 git commit ...`
 
 **Complete Exclusion from All Tools:**
-- ❌ **ESLint** - Excluded from all linting checks (`eslint.config.mjs`)
-- ❌ **TypeScript** - Excluded from type checking (`tsconfig.json`)
-- ❌ **Prettier** - Excluded from code formatting (`.prettierignore`)
-- ❌ **File Size Checks** - Excluded from size limit enforcement
-- ❌ **Cleanup Scripts** - Excluded from all code quality checks
-- ❌ **Pre-commit Checks** - Completely bypassed in all pre-commit hooks
-- ❌ **Bundle Analysis** - Not included in optimization analysis
 
-**How It Works:**
-1. Pre-commit hook (`.husky/pre-commit`) automatically checks for nachotaco file modifications
-2. If nachotaco files are detected in staged changes, commit is blocked with error message
-3. All scanning tools (ESLint, TypeScript, Prettier, cleanup scripts) automatically exclude nachotaco files
-4. Files remain tracked in git and will be pushed/committed (they just can't be modified or checked)
-
-**If You Accidentally Modify Nachotaco Files:**
-1. Check status: `npm run nachotaco:status`
-2. Reset files: `npm run nachotaco:reset` (restores to last committed state)
-3. Unstage if needed: `npm run nachotaco:unstage` (removes from staging area)
+- ❌ **ESLint** - Excluded (`eslint.config.mjs`)
+- ❌ **TypeScript** - Excluded (`tsconfig.json`)
+- ❌ **Prettier** - Excluded (`.prettierignore`)
+- ❌ **File Size Checks**, **Cleanup Scripts**, **Bundle Analysis** - All excluded
 
 **Available Commands:**
-- `npm run nachotaco:status` - Check if nachotaco files have been modified
-- `npm run nachotaco:reset` - Reset nachotaco files to last committed state
-- `npm run nachotaco:unstage` - Unstage nachotaco files from staging area
 
-**Documentation:**
-- See `docs/NACHOTACO_PROTECTION.md` for complete usage guide and troubleshooting
+- `npm run curbos:status` - Check if curbos files have been modified
+- `npm run curbos:reset` - Reset curbos files to last committed state
+- `npm run curbos:unstage` - Unstage curbos files from staging area
 
-**See Also:**
-- `scripts/protect-nachotaco.js` - Protection script implementation
-- `.husky/pre-commit` - Pre-commit hook that enforces protection
+**See Also:** `scripts/protect-curbos.js`, `.husky/pre-commit`
 
 #### **3. File Refactoring Standards (MANDATORY)**
 
@@ -1483,6 +787,7 @@ export const PREFETCH_MAP: Record<string, string[]> = {
 **📚 Refactoring Guide:**
 
 For comprehensive refactoring patterns, examples, and step-by-step instructions, see:
+
 - **`docs/FILE_SIZE_REFACTORING_GUIDE.md`** - Complete guide with 5 proven patterns, decision trees, checklists, and real-world examples from January 2025 refactoring (16 files fixed, 40+ new files created)
 
 **Recent Refactoring Examples:**
@@ -1492,6 +797,7 @@ For comprehensive refactoring patterns, examples, and step-by-step instructions,
 **Before:** Single large utility file (203 lines) - exceeded 150-line utility limit
 
 **After:** Split into 3 focused utilities (all under 150 lines):
+
 - `lib/ingredients/normalizeIngredientData.ts` (101 lines) - Core parsing and unit normalization
 - `lib/ingredients/buildInsertData.ts` (73 lines) - Data builder for database inserts
 - `lib/ingredients/normalizeIngredientDataMain.ts` (76 lines) - Main orchestrator function
@@ -1501,6 +807,7 @@ For comprehensive refactoring patterns, examples, and step-by-step instructions,
 **Before:** Large hooks exceeding 100-line limit (104-127 lines)
 
 **After:** Trimmed and optimized hooks (all under 100 lines) with extracted specialized hooks:
+
 - `useCOGSDataFetching.ts` - Data fetching (extracted)
 - `useIngredientConversion.ts` - Unit conversions (extracted)
 
@@ -1527,6 +834,7 @@ For comprehensive refactoring patterns, examples, and step-by-step instructions,
 **📚 Learn from Real Refactoring:**
 
 See `docs/FILE_SIZE_REFACTORING_GUIDE.md` for:
+
 - Detailed examples from January 2025 refactoring (16 files, 40+ new files)
 - Proven patterns that reduced files by 30-60% through strategic extraction
 - Common pitfalls and solutions (TypeScript types, React hooks, circular dependencies)

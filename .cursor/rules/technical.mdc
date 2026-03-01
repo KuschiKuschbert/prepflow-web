@@ -1,18 +1,6 @@
 ---
 alwaysApply: true
 ---
-## 🚨 **Critical Issues to Address**
-
-### **Immediate Fixes Required**
-
-1. **Image Optimization:** Large images without proper sizing
-2. **Performance:** Core Web Vitals optimization needed
-
-### **Conversion Blockers**
-
-1. **Form Validation:** Error handling and success states needed
-2. **Trust Indicators:** Security badges and company info
-3. **Urgency Elements:** Countdown or scarcity triggers
 
 ## Data & Schema Standards
 
@@ -41,11 +29,11 @@ Always calculate and use display dimensions (CSS pixel space) for `clearRect()` 
 const dpr = window.devicePixelRatio || 1;
 const width = window.innerWidth;
 const height = window.innerHeight;
-canvas.width = width * dpr;  // Buffer dimensions (physical pixels)
+canvas.width = width * dpr; // Buffer dimensions (physical pixels)
 canvas.height = height * dpr;
-canvas.style.width = `${width}px`;  // Display dimensions (CSS pixels)
+canvas.style.width = `${width}px`; // Display dimensions (CSS pixels)
 canvas.style.height = `${height}px`;
-ctx.scale(dpr, dpr);  // Scale context to CSS pixel space
+ctx.scale(dpr, dpr); // Scale context to CSS pixel space
 
 // In animation loop:
 // Calculate display dimensions (CSS pixel space, not buffer dimensions)
@@ -61,12 +49,14 @@ const centerY = displayHeight * 0.45;
 ```
 
 **Key Points:**
+
 - ✅ **DO:** Use `displayWidth` and `displayHeight` (from `window.innerWidth/innerHeight`) for `clearRect()` after scaling
 - ❌ **DON'T:** Use `canvas.width` and `canvas.height` for `clearRect()` after scaling - these are buffer dimensions
 - The context coordinate system matches display dimensions after `ctx.scale(dpr, dpr)`
 - All drawing operations should also use display dimensions
 
 **Examples:**
+
 - `app/curbos/components/PulsatingConcentricTriangles.tsx` - Fixed to use display dimensions
 - `app/components/landing/AnimatedBackground.tsx` - Fixed to use display dimensions
 
@@ -84,29 +74,48 @@ const centerY = displayHeight * 0.45;
 
 ## Optimistic Updates (Global)
 
-- **MANDATORY:** All CRUD operations must use optimistic updates to eliminate loading delays.
-- **Pattern:** Store original state → Update UI immediately → Make API call → Revert on error
-- **Utilities:** Use `lib/optimistic-updates.ts` for generic CRUD operations or `hooks/useOptimisticMutation.ts` for custom mutations.
-- **State Management:** Optimistic updates work with React state (`useState`) - store original state before updates, revert on error.
-- **User Feedback:** Use `useNotification` hook for success/error notifications, never show loading states for mutations.
-- **Error Handling:** Always implement rollback logic - restore original state if API call fails.
-- **Background Refresh:** Optionally refresh statistics or related data in background (non-blocking) after successful mutations.
-- **No Post-Success Fetches:** Never call `fetchData()` after successful mutations - rely on optimistic updates.
+**MANDATORY for all CRUD operations.** See `development.mdc` (Optimistic Updates Pattern) for the full pattern, code examples, and utilities (`lib/optimistic-updates.ts`, `hooks/useOptimisticMutation.ts`).
 
-**See Also:**
-- `development.mdc` (Optimistic Updates Pattern) - Detailed pattern and examples
-- `operations.mdc` (Optimistic Updates Standard) - Performance targets
-- `implementation.mdc` (Optimistic Updates Implementation Pattern) - Code examples
+## TanStack React Query (v5)
+
+**Version:** `@tanstack/react-query` v5 — installed and used for server-state caching.
+
+**Key patterns:**
+
+- Wrap `app/providers.tsx` `QueryClientProvider` (already done).
+- Use `useQuery` for reads, `useMutation` for writes with `onMutate`/`onError`/`onSettled` for optimistic updates.
+- Query keys: `['resource', id]` array format — always include all values the query depends on.
+- **Stale time:** 5 minutes default (`staleTime: 5 * 60 * 1000`).
+- **Do NOT mix** React Query fetches with the legacy `getCachedData` sessionStorage cache in the same component — pick one pattern.
+- Invalidate related queries after mutations: `queryClient.invalidateQueries({ queryKey: ['recipes'] })`.
+
+**GOTCHA:** In Next.js App Router, `useQuery` is client-only — wrap in `'use client'` component or use `prefetchQuery` in Server Components.
+
+## Zustand (v5)
+
+**Version:** `zustand` v5 — used for client-side global UI state (e.g., navigation state, selection mode).
+
+**Key patterns:**
+
+- Store files live in `lib/stores/` (e.g., `lib/stores/navigation.ts`).
+- Use slices pattern for large stores: `create<StoreType>()(...)`.
+- **Do NOT** store server data in Zustand — use React Query for that. Zustand is for UI state only.
+- Subscribe selectors to prevent unnecessary re-renders: `const count = useStore(state => state.count)` not `useStore()`.
+- Persist with `zustand/middleware` `persist` only when state must survive page refresh (e.g., sidebar collapsed state).
+
+**GOTCHA:** Zustand v5 dropped `immer` middleware auto-currying — wrap manually: `immer<State>((set) => ...)` if using it.
 
 ## 🤖 **Automated Enforcement**
 
 **Cleanup System:** See `cleanup.mdc` for comprehensive automated enforcement of all technical standards.
 
 **Available Checks:**
+
 - Autosave patterns: Manual review (autosave ID usage)
 - Next.js patterns: Manual review (route handler patterns)
 
 **Available Fixes:**
+
 - Autosave patterns: Manual fixes required
 - Next.js patterns: Manual fixes required
 

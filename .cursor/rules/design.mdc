@@ -1,6 +1,7 @@
 ---
 alwaysApply: true
 ---
+
 ## 🎨 **Cyber Carrot Design System**
 
 ### **Color Palette**
@@ -8,11 +9,11 @@ alwaysApply: true
 ```css
 --primary: #29e7cd /* Electric Cyan - Primary Actions */ --secondary: #3b82f6
   /* Blue - Secondary Actions */ --accent: #d925c7 /* Vibrant Magenta - Accent Elements */
-  --tertiary: #ff6b00 /* Cyber Orange - Warm Accents & Carrot Theme */
-  --background: #0a0a0a /* Dark background */ --foreground: #ffffff /* White text */
-  --muted: #1f1f1f /* Dark gray - Cards & Containers */ --border: #2a2a2a
-  /* Border gray - Subtle borders */ --surface: #2a2a2a /* Surface color - Elevated elements */
-  --surface-variant: #2a2a2a/30 /* Surface variant - Subtle backgrounds */;
+  --tertiary: #ff6b00 /* Cyber Orange - Warm Accents & Carrot Theme */ --background: #0a0a0a
+  /* Dark background */ --foreground: #ffffff /* White text */ --muted: #1f1f1f
+  /* Dark gray - Cards & Containers */ --border: #2a2a2a /* Border gray - Subtle borders */
+  --surface: #2a2a2a /* Surface color - Elevated elements */ --surface-variant: #2a2a2a/30
+  /* Surface variant - Subtle backgrounds */;
 ```
 
 ### **Cyber Carrot Typography**
@@ -180,10 +181,8 @@ import { Zap, Store, MapPin } from 'lucide-react';
 - **Example:**
 
 ```tsx
-<div className="bg-gradient-to-r from-[#29E7CD]/20 via-[#FF6B00]/20 via-[#D925C7]/20 to-[#29E7CD]/20 p-[1px] rounded-2xl">
-  <div className="rounded-xl bg-[#1f1f1f]/95">
-    {/* Content */}
-  </div>
+<div className="rounded-2xl bg-gradient-to-r from-[#29E7CD]/20 via-[#D925C7]/20 via-[#FF6B00]/20 to-[#29E7CD]/20 p-[1px]">
+  <div className="rounded-xl bg-[#1f1f1f]/95">{/* Content */}</div>
 </div>
 ```
 
@@ -200,6 +199,26 @@ import { Zap, Store, MapPin } from 'lucide-react';
   - Keep cyan as primary action color
   - Use orange sparingly for emphasis
   - Maintain visual hierarchy (cyan > magenta > orange)
+
+### **Framer Motion (v12)**
+
+**Version:** `framer-motion` v12 — installed. Use for complex interactive animations; prefer CSS transitions for simple hover/focus states.
+
+**Key patterns:**
+
+- `motion.div` for animatable elements. Variants for coordinated animation groups.
+- `AnimatePresence` for exit animations (modals, toasts, route transitions).
+- `useReducedMotion()` hook — **MANDATORY** to disable animations when user prefers reduced motion.
+- `layout` prop for smooth layout transitions (list reordering, size changes).
+- **Performance:** Use `will-change: transform` sparingly. Prefer `transform`/`opacity` properties — they don't trigger layout/paint.
+
+**When to use Framer vs CSS:**
+
+- ✅ Framer: Gesture-driven (drag, magnetic buttons), complex sequenced animations, exit animations, spring physics
+- ✅ CSS: Hover states, focus rings, simple fade/slide transitions (use `transition-all duration-200`)
+- ❌ Never import `framer-motion` in Server Components — ensure parent has `'use client'`
+
+**GOTCHA:** Framer Motion v12 removed several legacy APIs. Do NOT use `useAnimation()` (use `variants` + `animate` prop instead). Do NOT use `AnimateSharedLayout` (removed — use `layout` prop).
 
 ### **Cyber Carrot Animation System**
 
@@ -286,6 +305,7 @@ import { Zap, Store, MapPin } from 'lucide-react';
 The landing page uses a distinct style system optimized for marketing and conversion, while maintaining consistency with the overall Cyber Carrot Design System foundation. This section documents when and how to use landing page styles vs. webapp styles.
 
 **See Also:**
+
 - `docs/LANDING_PAGE_STYLE_GUIDE.md` - Complete landing page style guide
 - `lib/landing-styles.ts` - Centralized landing page style utilities
 - `docs/LANDING_STYLE_MIGRATION.md` - Migration guide for applying landing styles
@@ -293,6 +313,7 @@ The landing page uses a distinct style system optimized for marketing and conver
 ### **When to Use Landing Page Styles**
 
 **Use Landing Page Styles For:**
+
 - ✅ Marketing pages (`/`, `/pricing`, `/features`, etc.)
 - ✅ Public-facing content (landing pages, marketing sections)
 - ✅ Conversion-focused components (CTAs, hero sections, feature showcases)
@@ -300,12 +321,14 @@ The landing page uses a distinct style system optimized for marketing and conver
 - ✅ Public documentation pages
 
 **Use Webapp Styles For:**
+
 - ✅ Authenticated webapp pages (`/webapp/**`)
 - ✅ Data-heavy interfaces (tables, forms, dashboards)
 - ✅ Internal tools and admin interfaces
 - ✅ Functional components (navigation, settings, data management)
 
 **Decision Tree:**
+
 1. Is this a public marketing page? → Use landing page styles
 2. Is this an authenticated webapp page? → Use webapp styles
 3. Is this a conversion-focused component? → Use landing page styles
@@ -395,20 +418,15 @@ const animConfig = getAnimationConfig('emptyState', { userFacing: true });
 The landing page uses the same color palette as the webapp, but with enhanced visual effects:
 
 ```css
---primary-color: #29E7CD /* Electric Cyan - Primary Actions */
---secondary-color: #3B82F6 /* Blue - Secondary Actions */
---accent-color: #D925C7 /* Vibrant Magenta - Accent Elements */
---bg-color: #0a0a0a /* Dark background */
---text-color: #ffffff /* White text */
---gray-300: #d1d5db
---gray-400: #9ca3af
---gray-500: #6b7280
---gray-600: #4b5563
---gray-700: #374151
---gray-800: #1f2937
+--primary-color: #29e7cd /* Electric Cyan - Primary Actions */ --secondary-color: #3b82f6
+  /* Blue - Secondary Actions */ --accent-color: #d925c7 /* Vibrant Magenta - Accent Elements */
+  --bg-color: #0a0a0a /* Dark background */ --text-color: #ffffff /* White text */
+  --gray-300: #d1d5db --gray-400: #9ca3af --gray-500: #6b7280 --gray-600: #4b5563
+  --gray-700: #374151 --gray-800: #1f2937;
 ```
 
 **Usage:**
+
 - Set CSS variables in component `style` prop for dynamic theming
 - Use `lib/landing-styles.ts` constants for consistent color references
 - Apply glow effects and gradients for visual interest
@@ -436,6 +454,7 @@ The landing page uses fluid typography classes that scale smoothly across all sc
 - **Captions:** `text-fluid-sm` or `text-fluid-xs` with `text-gray-500`
 
 **Usage:**
+
 - Always use fluid typography classes for landing page content
 - Combine with responsive breakpoints for fine-tuning: `text-fluid-2xl tablet:text-fluid-3xl`
 - Use `font-light` for hero sections, `font-bold` for emphasis
@@ -449,12 +468,14 @@ The landing page uses fluid typography classes that scale smoothly across all sc
 **Purpose:** Interactive button with magnetic hover effect for enhanced engagement
 
 **Props:**
+
 - `strength?: number` - Magnetic pull strength (default: 0.3)
 - `maxDistance?: number` - Maximum pull distance in pixels (default: 20)
 - `scaleOnHover?: boolean` - Enable scale animation on hover (default: true)
 - `hoverScale?: number` - Scale factor on hover (default: 1.05)
 
 **Usage:**
+
 ```typescript
 import { MagneticButton } from '@/components/ui/MagneticButton';
 
@@ -467,12 +488,14 @@ import { MagneticButton } from '@/components/ui/MagneticButton';
 ```
 
 **When to Use:**
+
 - Primary CTAs on landing pages
 - Conversion-focused buttons
 - Hero section actions
 - Feature call-to-actions
 
 **When NOT to Use:**
+
 - Webapp functional buttons (use standard Button component)
 - Form submissions (use standard form buttons)
 - Navigation links (use Link component)
@@ -484,10 +507,12 @@ import { MagneticButton } from '@/components/ui/MagneticButton';
 **Purpose:** Card component with radial gradient glow effect following mouse cursor
 
 **Props:**
+
 - `glowColor?: string` - RGBA color for glow effect (default: primary color)
 - `glowIntensity?: number` - Glow intensity multiplier (default: 1.0)
 
 **Usage:**
+
 ```typescript
 import { GlowCard } from '@/components/ui/GlowCard';
 
@@ -498,12 +523,14 @@ import { GlowCard } from '@/components/ui/GlowCard';
 ```
 
 **When to Use:**
+
 - Feature showcase cards
 - Highlight sections
 - Testimonial cards
 - Metric displays
 
 **When NOT to Use:**
+
 - Data tables (use standard table styling)
 - Form containers (use standard card styling)
 - Webapp dashboard cards (use Cyber Carrot Design System cards)
@@ -515,6 +542,7 @@ import { GlowCard } from '@/components/ui/GlowCard';
 **Purpose:** Animates children into view as they scroll into viewport
 
 **Props:**
+
 - `variant?: 'fade-up' | 'fade-in' | 'scale-up' | 'slide-left' | 'slide-right'` - Animation type
 - `delay?: number` - Animation delay in seconds
 - `duration?: number` - Animation duration in seconds
@@ -522,6 +550,7 @@ import { GlowCard } from '@/components/ui/GlowCard';
 - `once?: boolean` - Animate only once (default: true)
 
 **Usage:**
+
 ```typescript
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
@@ -531,12 +560,14 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 ```
 
 **When to Use:**
+
 - Landing page sections
 - Feature introductions
 - Testimonial reveals
 - CTA sections
 
 **When NOT to Use:**
+
 - Webapp data loading (use LoadingSkeleton)
 - Form fields (no animation needed)
 - Navigation elements (use standard transitions)
@@ -546,6 +577,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 #### **Section Structure**
 
 **Standard Section Pattern:**
+
 ```typescript
 <section className="tablet:py-20 relative bg-transparent py-16">
   <div className="mx-auto max-w-7xl px-6">
@@ -558,6 +590,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 ```
 
 **Key Elements:**
+
 - `relative` positioning for background effects
 - `bg-transparent` for dark theme integration
 - Responsive padding: `py-16 tablet:py-20`
@@ -567,6 +600,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 #### **Grid Layouts**
 
 **Feature Grid:**
+
 ```typescript
 <div className="tablet:grid-cols-2 desktop:grid-cols-3 grid gap-8">
   {features.map((feature, index) => (
@@ -580,6 +614,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 ```
 
 **Metric Grid:**
+
 ```typescript
 <div className="tablet:grid-cols-2 desktop:grid-cols-4 grid gap-12">
   {metrics.map((metric, index) => (
@@ -595,6 +630,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 ### **Landing Page Animations**
 
 **Animation Principles:**
+
 - Use `ScrollReveal` for scroll-triggered animations
 - Stagger animations with `delay={index * 0.1}` for sequential reveals
 - Respect `prefers-reduced-motion` for accessibility
@@ -603,6 +639,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 **Common Animation Patterns:**
 
 1. **Fade Up on Scroll:**
+
 ```typescript
 <ScrollReveal variant="fade-up" delay={0}>
   <Component />
@@ -610,6 +647,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 ```
 
 2. **Staggered Grid Items:**
+
 ```typescript
 {items.map((item, index) => (
   <ScrollReveal key={item.id} variant="fade-up" delay={index * 0.1}>
@@ -619,6 +657,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 ```
 
 3. **Scale on Hover (MagneticButton):**
+
 ```typescript
 <MagneticButton scaleOnHover={true} hoverScale={1.05}>
   Button Text
@@ -638,11 +677,13 @@ The landing page uses `LandingBackground` component for immersive visual effects
 - **Fine noise texture:** Subtle texture overlay
 
 **Configuration:**
+
 - Theme settings in `lib/theme.ts` (`backgroundTheme` object)
 - Adjustable grid size, opacity, and glow intensity
 - Performance-optimized with `will-change` and `content-visibility`
 
 **Usage:**
+
 - Include `LandingBackground` in landing page layout
 - Configure via `backgroundTheme` in `lib/theme.ts`
 - Test performance impact on low-end devices
@@ -660,6 +701,7 @@ The landing page uses `LandingBackground` component for immersive visual effects
 **Best Practices:**
 
 1. **Lazy Load Heavy Components:**
+
 ```typescript
 const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
   loading: () => <LoadingSkeleton variant="card" />,
@@ -667,6 +709,7 @@ const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
 ```
 
 2. **Optimize Images:**
+
 ```typescript
 <Image
   src="/images/hero.png"
@@ -678,6 +721,7 @@ const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
 ```
 
 3. **Respect Reduced Motion:**
+
 ```typescript
 const prefersReducedMotion = useReducedMotion();
 const animationDuration = prefersReducedMotion ? 0 : 0.5;
@@ -708,282 +752,25 @@ const sectionClasses = getSectionClasses({ padding: 'large' });
 ```
 
 **See Also:**
+
 - `lib/landing-styles.ts` - Complete style utilities reference
 - `docs/LANDING_PAGE_STYLE_GUIDE.md` - Detailed style guide
 - `docs/LANDING_STYLE_MIGRATION.md` - Migration examples
 
 ## 📊 **Analytics & Tracking**
 
-### **Required Tracking Events**
-
-- **Page Views:** All page loads with metadata
-- **User Engagement:** Scroll depth, time on page, section views
-- **Conversion Events:** CTA clicks, form submissions, purchases
-- **Performance Metrics:** Core Web Vitals, loading times
-- **A/B Testing:** Variant assignments, performance comparisons
-
-### **Data Layer Structure**
-
-```typescript
-interface TrackingEvent {
-  event: string;
-  event_category: string;
-  event_label?: string;
-  event_value?: number;
-  page_title: string;
-  page_location: string;
-  page_path: string;
-  timestamp: number;
-  user_id?: string;
-  session_id: string;
-}
-```
-
-### **GTM Configuration**
-
-- **Container ID:** GTM-WQMV22RD
-- **GA4 Measurement ID:** G-W1D5LQXGJT
-- **Data Layer:** Automatic page tracking, custom event support
-- **Triggers:** Page views, custom events, user interactions
+GTM Container: `GTM-WQMV22RD` | GA4: `G-W1D5LQXGJT` | Vercel Analytics: enabled.
+Track: page views, CTA clicks, form submissions, Core Web Vitals, A/B variant assignments.
 
 ## 🚀 **Performance Requirements**
 
-### **Core Web Vitals Targets**
+**See `operations.mdc` (Performance Standards) for all performance targets, Core Web Vitals, caching/prefetching infrastructure, batch fetching patterns, and optimization best practices.**
 
-- **LCP (Largest Contentful Paint):** < 2.5 seconds
-- **FID (First Input Delay):** < 100 milliseconds
-- **CLS (Cumulative Layout Shift):** < 0.1
+## 🔍 **SEO & Conversion**
 
-### **Loading Performance**
-
-- **First Contentful Paint:** < 1.8 seconds
-- **Time to Interactive:** < 3.8 seconds
-- **Total Bundle Size:** < 200KB (gzipped)
-
-### **Optimization Strategies**
-
-- **Image Optimization:** next/image with proper sizing
-- **Code Splitting:** Dynamic imports for non-critical components
-- **Lazy Loading:** Images, components, and third-party scripts
-- **Caching:** Static generation, CDN optimization
-
-### **Speed Performance Improvements**
-
-#### **Batch Fetching Infrastructure**
-
-The application uses batch fetching and parallelization to eliminate N+1 query problems and sequential loading bottlenecks:
-
-- **Batch Utilities**: `lib/api/batch-utils.ts` provides reusable batch fetching helpers
-  - `chunkArray()`: Splits large arrays into manageable chunks
-  - `fetchInParallel()`: Executes multiple requests in parallel with error handling
-  - `fetchInBatches()`: Handles batched requests with automatic chunking
-  - `groupBy()`: Groups results by key function
-  - `MAX_BATCH_SIZE`: 100 items per batch (PostgreSQL IN clause limit)
-
-- **Parallel Fetch Hook**: `hooks/useParallelFetch.ts` provides reusable parallel data fetching
-  - Individual loading states per request
-  - Error handling per request
-  - Automatic retry and fallback mechanisms
-
-#### **Caching & Prefetching Infrastructure**
-
-The application uses sessionStorage-based caching and intelligent prefetching to dramatically improve perceived performance:
-
-- **Generic Data Cache**: `lib/cache/data-cache.ts` provides reusable caching utilities
-  - `cacheData(key, data, expiryMs)`: Cache any data type with configurable expiry (default 5 minutes)
-  - `getCachedData(key)`: Retrieve cached data if valid (not expired)
-  - `clearCache(key)`: Clear cache for specific key
-  - `clearAllCaches()`: Clear all application caches
-  - `prefetchApi(endpoint)`: Prefetch API endpoint using link prefetch
-  - `prefetchApis(endpoints)`: Prefetch multiple endpoints in parallel
-
-- **Prefetch Configuration**: `lib/cache/prefetch-config.ts` maps routes to API endpoints
-  - Centralized configuration for all navigation routes
-  - `prefetchRoute(route)`: Automatically prefetches all endpoints for a route
-  - Prefetch triggers on navigation link hover for instant page loads
-
-- **Page-Specific Caching**:
-  - **Dashboard**: Caches stats, temperature logs, and equipment data
-  - **Recipes**: Caches recipe list for instant display
-  - **Ingredients**: Caches first page of ingredients
-  - **Performance**: Caches performance analysis data
-  - **Temperature Logs**: Caches first page with default filters
-  - **Recipe-Sharing**: Caches recipes and shares for instant display
-  - **Functions**: Caches functions list and customers
-  - **Order-Lists**: Uses menu data with cache-first where applicable
-  - **Locked menu view**: Uses light API (`?locked=1`) for faster load; MenuCard prefetches on hover
-
-- **Instant Display Pattern**: All pages follow this pattern:
-  1. Initialize state with cached data (if available) for instant display
-  2. Fetch fresh data in background
-  3. Update UI with fresh data when available
-  4. Cache new data for next visit
-
-- **Navigation Prefetching**:
-  - Sidebar links prefetch on hover
-  - Search modal links prefetch on hover
-  - Routes automatically prefetch their configured API endpoints
-
-#### **Performance Optimization Patterns**
-
-1. **Batch API Endpoints**: Create batch endpoints for fetching multiple related items
-   - Example: `/api/recipes/ingredients/batch` accepts multiple recipe IDs
-   - Single Supabase query with `.in()` clause instead of N sequential queries
-   - Groups results by key for easy consumption
-
-2. **Parallel Fetching**: Use `Promise.all()` for independent requests
-   - Dashboard fetches stats and temperature data in parallel
-   - Recipe price calculations use parallel individual fetches as fallback
-   - Reduces total fetch time from sequential (sum) to parallel (max)
-
-3. **Non-Blocking Loading**: Show content immediately, calculate in background
-   - Recipes page shows recipe list immediately
-   - Price calculations happen asynchronously in background
-   - Progressive loading: prices appear as they're calculated
-
-4. **Fallback Mechanisms**: Always have fallback strategies
-   - Batch fetch fails → fallback to parallel individual fetches
-   - Parallel fetches fail → graceful error handling per item
-   - Ensures functionality even if optimizations fail
-
-5. **Caching Strategy**: Use sessionStorage for instant display
-   - Cache first page of paginated data for instant display
-   - Cache dashboard stats and frequently accessed data
-   - Show cached data immediately, refresh in background
-   - 5-minute default expiry (configurable per cache key)
-
-6. **Prefetching Strategy**: Prefetch on user intent
-   - Prefetch API endpoints on navigation link hover
-   - Prefetch on mount for likely-to-be-accessed pages
-   - Use link prefetch for browser-level optimization
-   - Avoid prefetching when data changes frequently
-
-#### **Performance Improvements Achieved**
-
-- **Recipes Page**: 80-90% reduction in load time (10s → 1-2s with 14 recipes)
-  - Before: 14 sequential API calls (~10 seconds)
-  - After: 1 batch API call or 14 parallel calls (~1-2 seconds)
-  - Non-blocking: Recipes list displays immediately
-  - Caching: Instant display from cache, then background refresh
-
-- **Dashboard**: 50% reduction in load time (2 sequential → 1 parallel)
-  - Before: Stats fetch → Temperature fetch (sequential)
-  - After: Stats + Temperature fetch (parallel)
-  - Caching: Instant display from cache, then background refresh
-
-- **Perceived Performance**: Near-instant page loads with caching
-  - Pages show cached data immediately (< 50ms)
-  - Fresh data loads in background (~1-2 seconds)
-  - Users see content instantly while data refreshes
-  - Navigation prefetching makes subsequent page loads instant
-
-#### **Best Practices for Future Development**
-
-1. Always batch related fetches using batch endpoints
-2. Use parallel fetching with `Promise.all()` for independent requests
-3. Show UI immediately, calculate expensive operations in background
-4. Implement fallbacks for all optimizations
-5. Cache first page data using sessionStorage for instant display
-6. Prefetch API endpoints on navigation link hover
-7. Initialize state with cached data using `getCachedData()` in useState
-8. Cache after fetch: always call `cacheData()` after successful data fetch
-9. Monitor performance using browser DevTools
-10. Consider pagination for large datasets
-
-**Implementation Guidelines:** Identify N+1 patterns, create batch endpoints, use parallel hooks, implement caching, add prefetching routes, test performance, document patterns.
-
-**Example Caching Pattern:**
-
-```typescript
-// Initialize with cached data
-const [data, setData] = useState(() => getCachedData('my_data') || []);
-
-useEffect(() => {
-  // Fetch fresh data
-  fetch('/api/my-data')
-    .then(res => res.json())
-    .then(newData => {
-      setData(newData);
-      cacheData('my_data', newData); // Cache for next visit
-    });
-}, []);
-```
-
-**Example Prefetching Pattern:**
-
-```typescript
-// In prefetch-config.ts
-export const PREFETCH_MAP: Record<string, string[]> = {
-  '/webapp/my-page': ['/api/my-data'],
-};
-
-// In navigation component
-<Link href="/webapp/my-page" onMouseEnter={() => prefetchRoute('/webapp/my-page')}>
-  My Page
-</Link>
-```
-
-## 🔍 **SEO Requirements**
-
-### **Meta Tags**
-
-- **Title:** Under 60 characters, includes primary keyword
-- **Description:** Under 160 characters, compelling and keyword-rich
-- **Keywords:** Relevant long-tail keywords for restaurant profitability
-- **Open Graph:** Social media optimization with proper images
-
-### **Structured Data**
-
-- **Software Application:** Main product schema
-- **FAQ:** Question and answer markup
-- **Organization:** Company information
-- **Breadcrumb:** Navigation structure
-
-### **Content Strategy**
-
-- **Primary Keywords:** restaurant COGS, menu profitability, gross profit optimization
-- **Long-tail Keywords:** Australian café profitability, food truck cost analysis
-- **Content Types:** Blog posts, case studies, video content, resource guides
-
-## 💰 **Conversion Optimization**
-
-### **Lead Generation**
-
-- **Primary CTA:** "Get PrepFlow Now" (purchase)
-- **Secondary CTA:** "Watch the 2-min demo" (engagement)
-- **Lead Magnet:** "Get the sample sheet (free)" (email capture)
-- **Exit Intent:** Popup with lead magnet offer
-
-### **Trust Elements**
-
-- **Social Proof:** Customer testimonials with specific results
-- **Risk Reversal:** 7-day refund policy, no lock-in
-- **Security:** SSL certificates, secure checkout badges
-- **Transparency:** Clear pricing, no hidden fees
-
-### **Urgency & Scarcity**
-
-- **Limited Time:** Launch discount countdown
-- **Social Proof:** Real-time signup notifications
-- **FOMO Triggers:** "Don't miss the margin makeover"
-- **Exclusivity:** "Limited founder pricing"
-
-## 🧪 **A/B Testing Strategy**
-
-### **Test Variables**
-
-- **Headlines:** Different value propositions
-- **CTAs:** Button text, colors, positioning
-- **Social Proof:** Testimonial placement, content
-- **Pricing:** Price points, discount amounts
-- **Layout:** Section ordering, content structure
-
-### **Testing Framework**
-
-- **Traffic Split:** 25% each for 4 variants
-- **Statistical Significance:** 95% confidence level
-- **Metrics:** Conversion rate, engagement, revenue
-- **Duration:** Minimum 2 weeks for reliable results
+**SEO:** Title < 60 chars, Description < 160 chars, OpenGraph tags, structured data (SoftwareApplication, FAQ, Organization).
+**Primary keywords:** restaurant COGS, menu profitability, gross profit.
+**Conversion:** Primary CTA "Get PrepFlow Now" | Exit intent popup | 7-day refund | A/B test CTAs/headlines with 95% statistical significance.
 
 ## 🎨 **UX Optimization & User Experience**
 
@@ -1184,6 +971,7 @@ Comprehensive mobile fixes ensuring the webapp works flawlessly on all mobile de
 **Breakpoint Detection Script:**
 
 Run `npm run detect-breakpoints` to analyze breakpoint usage across the codebase. This will identify:
+
 - Active breakpoints (used in project)
 - Unused breakpoints (defined but not used)
 - Rogue breakpoints (used but not defined - standard Tailwind breakpoints)
@@ -1294,11 +1082,13 @@ import { LANDING_GRIDS } from '@/lib/landing-styles';
 **Cleanup System:** See `cleanup.mdc` for comprehensive automated enforcement of all design standards.
 
 **Available Checks:**
+
 - Breakpoints: `npm run cleanup:check` (validates custom breakpoints, detects rogue breakpoints)
 - Icons: `npm run cleanup:check` (validates Icon wrapper usage, detects emoji usage)
 - Cyber Carrot Design System: Manual review (design patterns)
 
 **Available Fixes:**
+
 - Breakpoints: `npm run cleanup:fix` (auto-migrates rogue breakpoints via codemod)
 
 **Standards Reference:** See `cleanup.mdc` (Breakpoint Standards, Icon Standards, Cyber Carrot Design System Standards) for complete enforcement details.

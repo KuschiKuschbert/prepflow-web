@@ -1,6 +1,7 @@
 ---
 alwaysApply: true
 ---
+
 ## 🏗️ **Implementation Guide & Current Status**
 
 **Note:** All core features are implemented. See codebase for current state and implementation details.
@@ -58,140 +59,26 @@ CREATE TABLE table_name (
 ```
 
 **Example Implementation:**
+
 - `app/api/image-proxy/route.ts` - Demonstrates comprehensive error handling using `ApiErrorHandler.createError()` for all error cases (validation errors, timeout errors, abort errors, fetch errors, server errors) with proper HTTP status codes
 
 #### **Optimistic Updates Implementation Pattern**
 
-**MANDATORY:** All CRUD operations must use optimistic updates to eliminate loading delays and improve perceived performance.
+**MANDATORY:** All CRUD operations must use optimistic updates. See `development.mdc` (Optimistic Updates section) for the full pattern and all code examples.
 
-**Standard Pattern:**
-
-```typescript
-// Delete operation example
-const performDelete = async (id: string) => {
-  // 1. Store original state for rollback
-  const originalItems = [...currentItems];
-  const itemToDelete = currentItems.find(item => item.id === id);
-
-  if (!itemToDelete) {
-    showError('Item not found');
-    return;
-  }
-
-  // 2. Optimistically remove from UI immediately
-  setItems(prevItems => prevItems.filter(item => item.id !== id));
-
-  // 3. Make API call in background
-  try {
-    const response = await fetch(`/api/items/${id}`, { method: 'DELETE' });
-    const result = await response.json();
-
-    if (response.ok) {
-      // Success - show notification, refresh stats in background if needed
-      showSuccess('Item deleted successfully');
-      refreshStatistics().catch(err => logger.error('Failed to refresh statistics:', err));
-    } else {
-      // Error - revert optimistic update
-      setItems(originalItems);
-      showError(result.error || result.message || 'Operation failed');
-    }
-  } catch (err) {
-    // Error - revert optimistic update
-    setItems(originalItems);
-    logger.error('Failed to delete item:', err);
-    showError('Failed to delete item. Please check your connection and try again.');
-  }
-};
-```
-
-**Update Operation Example:**
+**Quick pattern:**
 
 ```typescript
-const performUpdate = async (id: string, updates: Partial<Item>) => {
-  // Store original state
-  const originalItems = [...currentItems];
-
-  // Optimistically update UI
-  setItems(prevItems =>
-    prevItems.map(item => (item.id === id ? { ...item, ...updates } : item)),
-  );
-
-  try {
-    const response = await fetch(`/api/items/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(updates),
-    });
-    const result = await response.json();
-
-    if (response.ok) {
-      showSuccess('Item updated successfully');
-    } else {
-      setItems(originalItems);
-      showError(result.error || 'Update failed');
-    }
-  } catch (err) {
-    setItems(originalItems);
-    showError('Update failed');
-  }
-};
+const originalItems = [...currentItems];
+setItems(optimisticUpdate);         // 1. Update UI immediately
+try {
+  await fetch('/api/endpoint', ...); // 2. API call
+  showSuccess('Done');
+} catch {
+  setItems(originalItems);           // 3. Revert on error
+  showError('Failed');
+}
 ```
-
-**Create Operation Example:**
-
-```typescript
-const performCreate = async (newItem: Partial<Item>) => {
-  // Store original state
-  const originalItems = [...currentItems];
-
-  // Create temporary item for optimistic update
-  const tempId = `temp-${Date.now()}`;
-  const tempItem = { ...newItem, id: tempId } as Item;
-
-  // Optimistically add to UI
-  setItems(prevItems => [...prevItems, tempItem]);
-
-  try {
-    const response = await fetch('/api/items', {
-      method: 'POST',
-      body: JSON.stringify(newItem),
-    });
-    const result = await response.json();
-
-    if (response.ok && result.item) {
-      // Replace temp item with real item from server
-      setItems(prevItems =>
-        prevItems.map(item => (item.id === tempId ? result.item : item)),
-      );
-      showSuccess('Item created successfully');
-    } else {
-      setItems(originalItems);
-      showError(result.error || 'Create failed');
-    }
-  } catch (err) {
-    setItems(originalItems);
-    showError('Create failed');
-  }
-};
-```
-
-**Key Requirements:**
-
-1. **Always store original state** before making optimistic updates
-2. **Update UI immediately** - no loading states for mutations
-3. **Revert on error** - restore original state if API call fails
-4. **Use notification system** - `useNotification` for user feedback
-5. **Replace native dialogs** - Use `ConfirmDialog` instead of `confirm()`
-6. **Background refresh** - Optionally refresh statistics in background (non-blocking)
-7. **Never refetch after success** - Rely on optimistic updates, don't call `fetchData()`
-
-**Reusable Utilities:**
-
-- **`lib/optimistic-updates.ts`**: Generic functions for common CRUD operations
-- **`hooks/useOptimisticMutation.ts`**: Reusable hook with automatic rollback
-
-**See Also:**
-- `development.mdc` (Optimistic Updates Pattern) - Detailed pattern and best practices
-- `operations.mdc` (Optimistic Updates Standard) - Performance targets and requirements
 
 ### **Current Project Structure**
 
@@ -273,7 +160,7 @@ prepflow-web/
 │   └── ...
 ├── lib/
 │   ├── supabase.ts                # Supabase client (database only)
-│   ├── auth-options.ts            # NextAuth configuration
+│   ├── auth0.ts                   # Auth0 SDK client (`@auth0/nextjs-auth0`)
 │   ├── stripe.ts                  # Stripe integration
 │   ├── analytics.ts               # Analytics service
 │   ├── ab-testing-analytics.ts    # A/B testing system
@@ -297,17 +184,7 @@ prepflow-web/
 
 ### **Environment Variables**
 
-```bash
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=https://dulkrqgjfohsuxhsmofo.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-
-# Email Service
-RESEND_API_KEY=re_hpumY9K8_HhSnL3T4DMXqsnHZpkNGzjQv
-FROM_EMAIL=hello@prepflow.org
-FROM_NAME=PrepFlow Team
-```
+See `core.mdc` (Auth/Billing sections) and `~/.cursor/skills/service-credentials/SKILL.md` for all environment variable names. Never hardcode secrets in rules.
 
 ### **Database Tables Required**
 
@@ -321,8 +198,7 @@ FROM_NAME=PrepFlow Team
 
 **Authentication & User:**
 
-- `GET /api/auth/[...nextauth]` - NextAuth authentication handlers
-- `POST /api/auth/logout` - User logout
+- `GET/POST /api/auth/[auth0]` - Auth0 SDK authentication handlers (login, callback, logout)
 - `GET /api/me` - Current user information
 - `GET /api/entitlements` - User subscription entitlements
 
@@ -464,25 +340,7 @@ FROM_NAME=PrepFlow Team
 
 #### **Supabase Integration Patterns**
 
-```typescript
-// Standard Supabase client usage
-import { supabaseAdmin } from '@/lib/supabase';
-
-// Check table existence
-const { data, error } = await supabaseAdmin.from('table_name').select('id').limit(1);
-
-if (error) {
-  // Handle table doesn't exist error
-  return NextResponse.json(
-    {
-      error: 'Table does not exist',
-      message: 'Please create tables first',
-      instructions: 'Visit /api/create-tables for SQL script',
-    },
-    { status: 400 },
-  );
-}
-```
+Always use `const { data, error } = await supabaseAdmin.from('table').select(...)`. Never chain `.catch()`. Handle `error` explicitly before using `data`. See `security.mdc` (Database Query Security Patterns) for safe query patterns.
 
 #### **Error Handling Standards**
 
@@ -530,10 +388,12 @@ if (error) {
 **Cleanup System:** See `cleanup.mdc` for comprehensive automated enforcement of all implementation standards.
 
 **Available Checks:**
+
 - API standards: Manual review (response formats, status codes)
 - Database patterns: Manual review (Supabase query patterns)
 
 **Available Fixes:**
+
 - API standards: Manual fixes required
 - Database patterns: Manual fixes required
 

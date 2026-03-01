@@ -1,3 +1,8 @@
+---
+description: Sacred files, pre-destructive-change checklist, rollback steps
+globs: migrations/**, app/curbos/**
+---
+
 # Safety — Before Destructive Changes, Sacred Files & Rollback Steps
 
 ## Before Any Destructive Change

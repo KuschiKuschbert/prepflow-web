@@ -1,6 +1,7 @@
 ---
 alwaysApply: true
 ---
+
 ## Auth, Allowlist, and Billing Setup
 
 **📚 Complete Reference:** See `docs/AUTH0_STRIPE_REFERENCE.md` for comprehensive Auth0 and Stripe configuration, setup, testing, and troubleshooting guide.
@@ -8,6 +9,7 @@ alwaysApply: true
 ### Auth (Auth0 SDK)
 
 **MANDATORY Environment Variables:**
+
 - `AUTH0_SECRET` - Generate with: `openssl rand -hex 32` (minimum 32 characters)
 - `AUTH0_BASE_URL` - Application URL (`http://localhost:3000` for dev, `https://www.prepflow.org` for prod)
 - `AUTH0_ISSUER_BASE_URL` - Auth0 tenant URL (e.g., `https://dev-xxx.us.auth0.com`)
@@ -16,15 +18,18 @@ alwaysApply: true
 - `AUTH0_DOMAIN` - Auth0 domain (optional, extracted from AUTH0_ISSUER_BASE_URL if not set)
 
 **Deprecated (Backward Compatibility):**
+
 - `NEXTAUTH_URL` - Use `AUTH0_BASE_URL` instead (kept as fallback during migration)
 - `NEXTAUTH_SECRET` - Use `AUTH0_SECRET` instead (no longer used)
 
 **MANDATORY Auth0 Dashboard Configuration:**
+
 - **Allowed Callback URLs:** Must include `/api/auth/callback` for all environments (Auth0 SDK uses `/api/auth/callback`, not `/api/auth/callback/auth0`)
 - **Allowed Logout URLs:** Must include exact logout URLs (with and without trailing slash) - **CRITICAL** or logout will fail
 - **Allowed Web Origins:** Must include application origins for CORS
 
 **Implementation Files:**
+
 - `lib/auth0.ts` - Auth0 SDK client instance and configuration
 - `lib/auth-user-sync.ts` - User sync on first login (creates user record, updates last_login)
 - `lib/auth0-management.ts` - Management API client for role extraction
@@ -33,6 +38,7 @@ alwaysApply: true
 - `proxy.ts` - Auth0 SDK proxy integration and allowlist enforcement (Next.js 16 proxy convention)
 
 **MANDATORY Best Practices:**
+
 - ✅ User creation on first login (implemented in `lib/auth-user-sync.ts`)
 - ✅ Session management via Auth0 SDK (4-hour inactivity timeout, 24-hour absolute timeout)
 - ✅ Minimal scopes: `openid profile email` only
@@ -41,6 +47,7 @@ alwaysApply: true
 - ✅ Never downgrade email verification status
 
 **Routes:**
+
 - `/api/auth/login` - Auth0 SDK login handler
 - `/api/auth/callback` - Auth0 SDK callback handler
 - `/api/auth/logout` - Auth0 SDK logout handler
@@ -48,6 +55,7 @@ alwaysApply: true
 - Proxy enforces allowlist on `/webapp/**` and `/api/**` (except auth routes)
 
 **See Also:**
+
 - `docs/AUTH0_STRIPE_REFERENCE.md` (Auth0 Configuration section) - Complete setup guide
 - `docs/AUTH0_LOCALHOST_SETUP.md` - Localhost-specific configuration
 - `docs/AUTH0_LOGOUT_SETUP.md` - Logout configuration troubleshooting
@@ -83,6 +91,7 @@ alwaysApply: true
 ### Billing (Stripe Integration)
 
 **MANDATORY Environment Variables:**
+
 - `STRIPE_SECRET_KEY` - Stripe secret key (`sk_test_...` for dev, `sk_live_...` for prod)
 - `STRIPE_WEBHOOK_SECRET` - Webhook signing secret (`whsec_...`)
 - `STRIPE_WEBHOOK_SECRET_DEV` - Optional: Dev-specific webhook secret (recommended)
@@ -92,12 +101,14 @@ alwaysApply: true
 - `STRIPE_PRICE_BUSINESS_MONTHLY` - Price ID for Business tier (`price_...`)
 
 **MANDATORY Stripe Dashboard Configuration:**
+
 - **Products:** Create Starter, Pro, Business products with monthly recurring prices
 - **Webhook Endpoint:** `https://yourdomain.com/api/webhook/stripe`
 - **Webhook Events:** `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_succeeded`, `invoice.payment_failed`
 - **Webhook Secret:** Copy signing secret from Stripe Dashboard
 
 **Implementation Files:**
+
 - `lib/stripe.ts` - Stripe client singleton (API version: `2025-11-17.clover`)
 - `app/api/billing/create-checkout-session/route.ts` - Checkout session creation
 - `app/api/billing/create-portal-session/route.ts` - Customer portal creation
@@ -107,6 +118,7 @@ alwaysApply: true
 - `lib/feature-gate.ts` - Feature gating
 
 **MANDATORY Best Practices:**
+
 - ✅ Webhook signature verification (all webhook requests)
 - ✅ Webhook idempotency (via `webhook_events` table)
 - ✅ Environment-specific webhook secrets (DEV/PROD)
@@ -117,17 +129,20 @@ alwaysApply: true
 - ✅ Proper error handling (correct HTTP status codes for retries)
 
 **Endpoints:**
+
 - `POST /api/billing/create-checkout-session` - Create Stripe checkout session (requires auth)
 - `POST /api/billing/create-portal-session` - Create Stripe customer portal (requires auth)
 - `POST /api/webhook/stripe` - Stripe webhook handler (requires signature verification)
 
 **Database Tables Required:**
+
 - `users` - Subscription fields (tier, status, stripe_customer_id, stripe_subscription_id)
 - `billing_customers` - Customer ID caching (user_email, stripe_customer_id)
 - `webhook_events` - Idempotency tracking (event_id, processed)
 - `user_notifications` - Notification system (user_email, notification_type)
 
 **See Also:**
+
 - `docs/AUTH0_STRIPE_REFERENCE.md` (Stripe Configuration section) - Complete setup guide
 - `docs/STRIPE_SETUP_CHECKLIST.md` - Step-by-step Stripe setup
 - `docs/STRIPE_INTEGRATION.md` - Detailed Stripe integration guide
@@ -151,7 +166,7 @@ alwaysApply: true
 
 ### QA Checklist
 
-- Auth: NextAuth + Auth0 working; allowlist enforced on `/webapp/**` routes
+- Auth: Auth0 SDK working; allowlist enforced on `/webapp/**` routes
 - Tour modal: focus trap, Escape closes, arrows navigate
 - Performance: Lighthouse ≥ 90; CLS < 0.1; LCP < 2.5s
 - Analytics: tour_open/close, step navigation, CTA clicks
@@ -167,53 +182,11 @@ alwaysApply: true
 
 ## ⚡ Optimistic Updates (MANDATORY)
 
-**Quick Reference:**
-- **MANDATORY:** All CRUD operations (Create, Update, Delete) must use optimistic updates to eliminate loading delays
-- **Pattern:** Store original state → Update UI immediately → Make API call → Revert on error
-- **Utilities:**
-  - `lib/optimistic-updates.ts` - Generic CRUD operations (`createOptimisticDelete`, `createOptimisticUpdate`, `createOptimisticCreate`, `createOptimisticReorder`)
-  - `hooks/useOptimisticMutation.ts` - Reusable hook for custom mutations with automatic rollback
-- **Performance Target:** < 50ms perceived response time (no loading states for mutations)
-- **State Management:** Works with React state (`useState`) - store original state before updates, revert on error
-- **User Feedback:** Use `useNotification` hook for success/error notifications, never show loading states for mutations
-- **Error Handling:** Always implement rollback logic - restore original state if API call fails
-- **Background Refresh:** Optionally refresh statistics or related data in background (non-blocking) after successful mutations
-- **Never:** Call `fetchData()` after successful mutations - rely on optimistic updates
+**MANDATORY:** All CRUD operations must use optimistic updates. Pattern: store original state → update UI immediately → API call → revert on error. Never call `fetchData()` after success. Target: < 50ms perceived response time.
 
-**Standard Pattern:**
-```typescript
-// 1. Store original state for rollback
-const originalState = [...currentState];
+**Utilities:** `lib/optimistic-updates.ts` | `hooks/useOptimisticMutation.ts`
 
-// 2. Optimistically update UI immediately
-setState(optimisticUpdate);
-
-// 3. Make API call in background
-try {
-  const response = await fetch('/api/endpoint', { method: 'DELETE' });
-  const result = await response.json();
-
-  if (response.ok) {
-    // Success - show notification, refresh stats in background if needed
-    showSuccess('Item deleted');
-    refreshStatistics().catch(err => logger.error(err));
-  } else {
-    // Error - revert optimistic update
-    setState(originalState);
-    showError(result.error || 'Operation failed');
-  }
-} catch (err) {
-  // Error - revert optimistic update
-  setState(originalState);
-  showError('Operation failed');
-}
-```
-
-**See Also:**
-- `development.mdc` (Optimistic Updates Pattern) - Detailed pattern and examples
-- `implementation.mdc` (Optimistic Updates Implementation Pattern) - Code examples
-- `operations.mdc` (Optimistic Updates Standard) - Performance targets
-- `technical.mdc` (Optimistic Updates Global) - Quick reference
+**See `development.mdc` (Optimistic Updates section) for full pattern and code examples.**
 
 ### Supabase TypeScript Gotcha (Vercel Build)
 
@@ -250,11 +223,13 @@ try {
 **Cleanup System:** See `cleanup.mdc` for comprehensive automated enforcement of all core standards.
 
 **Available Checks:**
+
 - TypeScript ref types: `npm run cleanup:check` (validates RefObject patterns)
 - Naming conventions: `npm run cleanup:check` (validates file/component/function naming)
 - Supabase patterns: Manual review (query patterns)
 
 **Available Fixes:**
+
 - Naming conventions: Manual fixes required
 
 **Standards Reference:** See `cleanup.mdc` (Code Quality Standards, Naming Conventions) for complete enforcement details.
@@ -280,7 +255,7 @@ PrepFlow is a unified restaurant profitability optimization platform that helps 
 - **Deployment:** Vercel platform
 - **Payment:** Stripe integration
 - **Database:** Supabase PostgreSQL
-- **Authentication:** NextAuth + Auth0 (user authentication), Supabase (database only)
+- **Authentication:** Auth0 SDK (`@auth0/nextjs-auth0` v4), Supabase (database only)
 - **Email:** Resend integration
 - **Mobile:** React Native + Expo (future)
 
@@ -307,9 +282,9 @@ PrepFlow is a unified restaurant profitability optimization platform that helps 
 
 ### **Authentication Flow**
 
-- **NextAuth + Auth0:** User authentication via NextAuth with Auth0 provider
+- **Auth0 SDK (`@auth0/nextjs-auth0` v4):** Handles all authentication via `proxy.ts` and `app/api/auth/[auth0]/route.ts`
 - **Supabase:** Database only (PostgreSQL) - not used for user authentication
-- **Session Management:** Secure token storage and refresh via NextAuth
+- **Session Management:** Auth0 SDK session management (4-hour inactivity, 24-hour absolute timeout)
 - **Allowlist Enforcement:** Proxy enforces email allowlist on `/webapp/**` and `/api/**` routes
 - **Role-Based Access:** User and admin permissions managed via Auth0
 

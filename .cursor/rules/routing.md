@@ -1,3 +1,8 @@
+---
+description: Route conventions, API route patterns, Next.js 16 params, dynamic segments
+globs: app/**/route.ts, app/**/page.tsx, app/**/layout.tsx, proxy.ts
+---
+
 # Routing — All URLs, Dynamic Routes, Domains & Patterns
 
 ## Route Conventions

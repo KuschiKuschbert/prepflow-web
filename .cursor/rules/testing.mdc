@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+description: Testing standards - unit, integration, E2E (Playwright), accessibility, security, performance testing patterns
+globs: __tests__/**, e2e/**, *.test.ts, *.test.tsx, *.spec.ts, *.spec.tsx, jest.config.*, playwright.config.*
 ---
 
 ## 🧪 **Testing Standards & Quality Assurance**
@@ -116,24 +117,29 @@ describe('/api/recipes', () => {
 
 **E2E Testing Tools:**
 
-- **Framework:** Playwright or Cypress (future)
-- **Setup:** E2E test configuration
-- **CI/CD:** Run E2E tests in CI pipeline
+- **Framework:** `@playwright/test` v1.58+ — **installed and configured** at `playwright.config.ts`
+- **Commands:** `npm run test:e2e` (full suite) | `npm run test:smoke` (quick smoke) | `npm run test:crawl` (console error detection)
+- **CI/CD:** E2E tests run in CI pipeline on merge to `main`
 
-**E2E Test Pattern:**
+**Playwright Key Patterns:**
 
 ```typescript
-// Example with Playwright
 import { test, expect } from '@playwright/test';
 
 test('user can create recipe', async ({ page }) => {
   await page.goto('/webapp/recipes');
-  await page.click('text=New Recipe');
-  await page.fill('[name="name"]', 'Test Recipe');
-  await page.click('text=Save');
-  await expect(page.locator('text=Test Recipe')).toBeVisible();
+  await page.getByRole('button', { name: 'New Recipe' }).click();
+  await page.getByLabel('Recipe name').fill('Test Recipe');
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByText('Test Recipe')).toBeVisible();
 });
 ```
+
+**Playwright GOTCHAS:**
+- **Auth:** Tests bypass allowlist auth by default in CI (see `playwright.config.ts` `storageState`). Use `test.use({ storageState: 'e2e/auth.json' })` for authenticated tests.
+- **Selectors:** Prefer `getByRole`, `getByLabel`, `getByText` over CSS selectors — more resilient to UI changes.
+- **Waits:** Never use `page.waitForTimeout()` — use `waitForLoadState`, `waitForResponse`, or expect assertions.
+- **Crawl report:** `npm run test:crawl` generates `CRAWL_REPORT.md` — review before PRs to catch console errors.
 
 **E2E Test Checklist:**
 
@@ -354,10 +360,12 @@ For complete documentation of all testing scripts and future test commands, see 
 **Cleanup System:** See `cleanup.mdc` for comprehensive automated enforcement of all testing standards.
 
 **Available Checks:**
+
 - Test coverage: Manual review (coverage reports)
 - Accessibility: Manual review (WCAG compliance)
 
 **Available Fixes:**
+
 - Test coverage: Manual fixes required
 - Accessibility: Manual fixes required
 

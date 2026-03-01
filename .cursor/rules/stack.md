@@ -1,3 +1,8 @@
+---
+description: Full tech stack versions, library constraints, and upgrade notes for PrepFlow/CurbOS
+globs: package.json, package-lock.json, tsconfig.json, next.config.ts, tailwind.config.ts
+---
+
 # Stack — Full Tech Stack, Versions & Constraints
 
 ## Runtime & Framework
@@ -103,7 +108,7 @@
 - No `console.log` in production code — use `lib/logger`
 - No `any` type without justification and comment
 - `app/curbos/` is protected — never modify without `ALLOW_CURBOS_MODIFY=1`
-- `app/nachotaco/` is excluded from all linting, type-checking, and formatting
+- `app/curbos/` and `app/curbos-import/` are excluded from all linting, type-checking, and formatting
 
 ## Version Upgrade Notes
 
