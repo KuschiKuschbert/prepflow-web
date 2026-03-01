@@ -1,8 +1,8 @@
 import { standardAdminChecks } from '@/lib/admin-auth';
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { parseAndValidate } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
-import { ZodSchema } from 'zod';
 import { checkTableExists } from './helpers/checkTableExists';
 import { createParLevel } from './helpers/createParLevel';
 import { deleteParLevel } from './helpers/deleteParLevel';
@@ -10,24 +10,6 @@ import { fetchParLevels } from './helpers/fetchParLevels';
 import { handleParLevelError } from './helpers/handleParLevelError';
 import { createParLevelSchema, updateParLevelSchema } from './helpers/schemas';
 import { updateParLevel } from './helpers/updateParLevel';
-
-async function safeParseBody<T>(request: NextRequest, schema: ZodSchema<T>): Promise<T> {
-  try {
-    const body = await request.json();
-    const result = schema.safeParse(body);
-    if (!result.success) {
-      throw ApiErrorHandler.createError(
-        result.error.issues[0]?.message || 'Invalid request body',
-        'VALIDATION_ERROR',
-        400,
-      );
-    }
-    return result.data;
-  } catch (error) {
-    if (error instanceof Error && 'status' in error) throw error;
-    throw ApiErrorHandler.createError('Invalid JSON body', 'VALIDATION_ERROR', 400);
-  }
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -77,8 +59,9 @@ export async function POST(request: NextRequest) {
     if (error) return error;
     if (!supabase) return NextResponse.json({ error: 'Database unavailable' }, { status: 500 });
 
-    const body = await safeParseBody(request, createParLevelSchema);
-    const data = await createParLevel(supabase, body);
+    const parsed = await parseAndValidate(request, createParLevelSchema, '[ParLevels]');
+    if (!parsed.ok) return parsed.response;
+    const data = await createParLevel(supabase, parsed.data);
 
     return NextResponse.json({
       success: true,
@@ -110,8 +93,9 @@ export async function PUT(request: NextRequest) {
     if (error) return error;
     if (!supabase) return NextResponse.json({ error: 'Database unavailable' }, { status: 500 });
 
-    const body = await safeParseBody(request, updateParLevelSchema);
-    const { id, ...updates } = body;
+    const parsed = await parseAndValidate(request, updateParLevelSchema, '[ParLevels]');
+    if (!parsed.ok) return parsed.response;
+    const { id, ...updates } = parsed.data;
     const data = await updateParLevel(supabase, id, updates);
 
     return NextResponse.json({

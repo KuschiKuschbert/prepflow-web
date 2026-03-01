@@ -6,29 +6,11 @@
  */
 
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { parseAndValidate } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { getAuthenticatedUserByEmail } from '@/lib/api-helpers/getAuthenticatedUserByEmail';
 import { NextRequest, NextResponse } from 'next/server';
-import { ZodSchema, z } from 'zod';
-
-async function safeParseBody<T>(req: NextRequest, schema: ZodSchema<T>): Promise<T> {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch (_err) {
-    throw ApiErrorHandler.createError('Invalid request body', 'VALIDATION_ERROR', 400);
-  }
-
-  const result = schema.safeParse(body);
-  if (!result.success) {
-    throw ApiErrorHandler.createError(
-      result.error.issues[0]?.message || 'Invalid request body',
-      'VALIDATION_ERROR',
-      400,
-    );
-  }
-  return result.data;
-}
+import { z } from 'zod';
 
 /**
  * GET /api/roster/templates
@@ -114,8 +96,9 @@ export async function POST(request: NextRequest) {
     const { userId, supabaseAdmin } = await getAuthenticatedUserByEmail(request);
     const supabase = supabaseAdmin;
 
-    const body = await safeParseBody(request, createTemplateSchema);
-    const { name, description, is_active } = body;
+    const parsed = await parseAndValidate(request, createTemplateSchema, '[RosterTemplates]');
+    if (!parsed.ok) return parsed.response;
+    const { name, description, is_active } = parsed.data;
 
     const templateData = {
       name,

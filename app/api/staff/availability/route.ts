@@ -6,30 +6,11 @@
  */
 
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { parseAndValidate } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { getAuthenticatedUser } from '@/lib/server/get-authenticated-user';
 import { NextRequest, NextResponse } from 'next/server';
-import { ZodSchema } from 'zod';
 import { createAvailabilitySchema } from './helpers/schemas';
-
-async function safeParseBody<T>(req: NextRequest, schema: ZodSchema<T>): Promise<T> {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch (_err) {
-    throw ApiErrorHandler.createError('Invalid request body', 'VALIDATION_ERROR', 400);
-  }
-
-  const result = schema.safeParse(body);
-  if (!result.success) {
-    throw ApiErrorHandler.createError(
-      result.error.issues[0]?.message || 'Invalid request body',
-      'VALIDATION_ERROR',
-      400,
-    );
-  }
-  return result.data;
-}
 
 /**
  * GET /api/staff/availability
@@ -110,8 +91,9 @@ export async function POST(request: NextRequest) {
   try {
     const { userId, supabase } = await getAuthenticatedUser(request);
 
-    const body = await safeParseBody(request, createAvailabilitySchema);
-    const { employee_id, day_of_week, start_time, end_time, is_available } = body;
+    const parsed = await parseAndValidate(request, createAvailabilitySchema, '[StaffAvailability]');
+    if (!parsed.ok) return parsed.response;
+    const { employee_id, day_of_week, start_time, end_time, is_available } = parsed.data;
 
     // Check if employee exists and belongs to user
     const { data: employee, error: employeeError } = await supabase

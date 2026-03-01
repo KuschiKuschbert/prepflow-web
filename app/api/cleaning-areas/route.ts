@@ -1,33 +1,14 @@
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { parseAndValidate } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { createSupabaseAdmin } from '@/lib/supabase';
 import { getAppError } from '@/lib/utils/error';
 import { NextRequest, NextResponse } from 'next/server';
-import { ZodSchema } from 'zod';
 import { handleCreateCleaningArea } from './helpers/createCleaningAreaHandler';
 import { handleDeleteCleaningArea } from './helpers/deleteCleaningAreaHandler';
 import { handleCleaningAreaError } from './helpers/handleCleaningAreaError';
 import { updateCleaningAreaSchema } from './helpers/schemas';
 import { updateCleaningArea } from './helpers/updateCleaningArea';
-
-async function safeParseBody<T>(req: NextRequest, schema: ZodSchema<T>): Promise<T> {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch (_err) {
-    throw ApiErrorHandler.createError('Invalid request body', 'VALIDATION_ERROR', 400);
-  }
-
-  const result = schema.safeParse(body);
-  if (!result.success) {
-    throw ApiErrorHandler.createError(
-      result.error.issues[0]?.message || 'Invalid request body',
-      'VALIDATION_ERROR',
-      400,
-    );
-  }
-  return result.data;
-}
 
 async function getAuthenticatedUser(request: NextRequest) {
   const supabaseAdmin = createSupabaseAdmin();
@@ -140,8 +121,9 @@ export async function PUT(request: NextRequest) {
   try {
     const { userId, supabase } = await getAuthenticatedUser(request);
 
-    const body = await safeParseBody(request, updateCleaningAreaSchema);
-    const { id, area_name, description, cleaning_frequency, is_active } = body;
+    const parsed = await parseAndValidate(request, updateCleaningAreaSchema, '[CleaningAreas]');
+    if (!parsed.ok) return parsed.response;
+    const { id, area_name, description, cleaning_frequency, is_active } = parsed.data;
 
     const updateData: Record<string, unknown> = {};
     if (area_name !== undefined) updateData.area_name = area_name;
