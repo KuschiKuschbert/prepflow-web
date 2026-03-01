@@ -37,6 +37,17 @@ Fixes of type 'cleanup' have a 100.0% success rate across 8 attempts.
 
 Apply cleanup pattern when similar context arises
 
+## Consolidation Checks
+
+When reviewing code or wrapping up changes, also verify:
+
+- **No duplicate `safeParseBody`**: API routes must use `import { safeParseBody } from '@/lib/api/parse-request-body'`, not a local copy
+- **No duplicate `parseAndValidate`**: Routes with Zod validation must use `import { parseAndValidate } from '@/lib/api/parse-request-body'`
+- **No duplicate `getAuthenticatedUser`**: Must use `import { getAuthenticatedUserByEmail } from '@/lib/api-helpers/getAuthenticatedUserByEmail'`
+- **No orphaned docs**: Docs not referenced by `.cursor/rules/*.mdc` or `AGENTS.md` belong in `docs/archive/`
+- **No empty files**: Files with 0 lines or only `export {}` should be deleted
+- **No duplicate hooks**: Check if a similar hook already exists before creating a new one (e.g., `useIsVisible` vs `useIntersectionObserver`)
+
 ## Style Guide
 
 - Never claim a task is complete without running the checklist

@@ -22,6 +22,12 @@ Changes must feel finished. No half-done states, no placeholder copy.
 - **Copy**: No lorem, no placeholder text, no raw "TODO" in user-facing strings
 - **Consistency**: Similar screens use similar patterns
 
+## Docs Hygiene
+
+- One-off fix docs belong in `docs/archive/`, not root `docs/`
+- Only canonical docs should live in `docs/` -- referenced by `.cursor/rules/*.mdc` or `AGENTS.md`
+- When creating docs, check if similar doc already exists in `docs/archive/`
+
 ## Key References
 
 - [docs/VOICE_ENHANCEMENT_GUIDE.md](docs/VOICE_ENHANCEMENT_GUIDE.md) - PrepFlow voice for copy

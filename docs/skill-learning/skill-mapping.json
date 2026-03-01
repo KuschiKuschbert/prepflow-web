@@ -9,6 +9,9 @@
   "rsiTypes": {
     "cleanup": "prepflow-guardian",
     "lint-fix": "prepflow-craft",
-    "refactor": "prepflow-craft"
+    "refactor": "prepflow-craft",
+    "consolidation": "prepflow-guardian",
+    "dead-code": "prepflow-guardian",
+    "docs-cleanup": "prepflow-craft"
   }
 }
