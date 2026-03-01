@@ -1,4 +1,5 @@
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { autoDetectCategory } from '@/lib/ingredients/category-detection';
 import { logger } from '@/lib/logger';
 import { createSupabaseAdmin } from '@/lib/supabase';
@@ -24,18 +25,6 @@ const autoCategorizeSchema = z
       path: ['ingredientIds'],
     },
   );
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Auto-Categorize API] Failed to parse request JSON:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 /**
  * Bulk auto-categorize ingredients.

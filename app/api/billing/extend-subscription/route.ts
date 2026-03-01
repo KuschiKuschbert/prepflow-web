@@ -4,6 +4,7 @@ import { clearTierCache } from '@/lib/feature-gate';
 import { logger } from '@/lib/logger';
 import { getStripe } from '@/lib/stripe';
 import { supabaseAdmin } from '@/lib/supabase';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { NextRequest, NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 import { z } from 'zod';
@@ -13,18 +14,6 @@ const extendSubscriptionSchema = z.object({
 });
 
 const AVG_SECONDS_IN_MONTH = 30 * 24 * 60 * 60;
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Billing API] Failed to parse request JSON:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 /**
  * POST /api/billing/extend-subscription

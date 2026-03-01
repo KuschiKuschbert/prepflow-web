@@ -19,6 +19,9 @@ Every touch should leave the codebase slightly better than before.
 - **Improve names**: If you touch code with unclear variable/function names, clarify them
 - **Document**: Add JSDoc to public functions you modify if missing
 - **Extract over inline**: Prefer extracting a small helper over leaving complex inline logic
+- **Consolidate while touching**: When touching an API route, check if it has a local `safeParseBody` -- replace with shared module
+- **Check for duplicate hooks**: When touching a hook, check if a similar hook already exists
+- **Check docs placement**: When creating docs, check if similar doc already exists in `docs/archive/`
 
 ## Style Guide
 

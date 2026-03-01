@@ -6,6 +6,7 @@
  */
 
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { triggerRecipeSync } from '@/lib/square/sync/hooks';
 import { supabaseAdmin } from '@/lib/supabase';
@@ -16,18 +17,6 @@ import { enrichRecipeWithAllergens } from './helpers/enrichRecipeWithAllergens';
 import { handleRecipeUpdate } from './helpers/handleRecipeUpdate';
 import { updateRecipeSchema } from './helpers/schemas';
 import { validateRecipeUpdate } from './helpers/validateRecipeUpdate';
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Recipes API] Failed to parse request JSON:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 export async function GET(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {

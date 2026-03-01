@@ -1,33 +1,15 @@
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { parseAndValidate } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { getAuthenticatedUser } from '@/lib/server/get-authenticated-user';
 import { PostgrestError } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
-import { z, ZodSchema } from 'zod';
+import { z } from 'zod';
 import { createEmployee } from './helpers/createEmployee';
 import { handleDeleteEmployee } from './helpers/deleteEmployeeHandler';
 import { handleEmployeeError } from './helpers/handleEmployeeError';
 import { createEmployeeSchema, EMPLOYEE_SELECT, updateEmployeeSchema } from './helpers/schemas';
 import { updateEmployee } from './helpers/updateEmployee';
-
-async function safeParseBody<T>(req: NextRequest, schema: ZodSchema<T>): Promise<T> {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch (_err) {
-    throw ApiErrorHandler.createError('Invalid request body', 'VALIDATION_ERROR', 400);
-  }
-
-  const result = schema.safeParse(body);
-  if (!result.success) {
-    throw ApiErrorHandler.createError(
-      result.error.issues[0]?.message || 'Invalid request body',
-      'VALIDATION_ERROR',
-      400,
-    );
-  }
-  return result.data;
-}
 
 /**
  * GET /api/employees
@@ -97,9 +79,10 @@ export async function POST(request: NextRequest) {
   try {
     const { userId, supabase } = await getAuthenticatedUser(request);
 
-    const body = await safeParseBody(request, createEmployeeSchema);
+    const parsed = await parseAndValidate(request, createEmployeeSchema, '[Employees]');
+    if (!parsed.ok) return parsed.response;
 
-    const data = await createEmployee(supabase, body, userId);
+    const data = await createEmployee(supabase, parsed.data, userId);
 
     return NextResponse.json({
       success: true,
@@ -138,8 +121,9 @@ export async function PUT(request: NextRequest) {
   try {
     const { userId, supabase } = await getAuthenticatedUser(request);
 
-    const body = await safeParseBody(request, updateEmployeeSchema);
-    const { id, ...updates } = body;
+    const parsed = await parseAndValidate(request, updateEmployeeSchema, '[Employees]');
+    if (!parsed.ok) return parsed.response;
+    const { id, ...updates } = parsed.data;
 
     const data = await updateEmployee(supabase, id, updates, userId);
 

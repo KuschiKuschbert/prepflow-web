@@ -4,6 +4,7 @@ import type { Customer } from '@/app/api/customers/helpers/schemas';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
+import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 import { Modal } from '@/components/ui/Modal';
 import { ResponsivePageContainer } from '@/components/ui/ResponsivePageContainer';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -147,11 +148,8 @@ export default function CustomersPage() {
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td
-                      colSpan={4}
-                      className="h-32 px-6 py-4 text-center text-[var(--foreground-muted)]"
-                    >
-                      Loading customers...
+                    <td colSpan={4} className="p-0">
+                      <LoadingSkeleton variant="table" />
                     </td>
                   </tr>
                 ) : customers.length === 0 ? (

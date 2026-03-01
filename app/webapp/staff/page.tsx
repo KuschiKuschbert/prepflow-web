@@ -1,7 +1,9 @@
 'use client';
 
 import { PageSkeleton } from '@/components/ui/LoadingSkeleton';
+import { PageTipsCard } from '@/components/ui/PageTipsCard';
 import { ResponsivePageContainer } from '@/components/ui/ResponsivePageContainer';
+import { PAGE_TIPS_CONFIG } from '@/lib/page-help/page-tips-content';
 import { Suspense, useState } from 'react';
 import { Modal } from '../../../components/ui/Modal';
 import { EmployeeForm } from './components/EmployeeForm';
@@ -31,6 +33,12 @@ export default function StaffPage() {
           onStatusChange={setSelectedStatus}
           onAddStaff={() => setIsAddModalOpen(true)}
         />
+
+        {PAGE_TIPS_CONFIG.staff && (
+          <div className="mb-6">
+            <PageTipsCard config={PAGE_TIPS_CONFIG.staff} />
+          </div>
+        )}
 
         <Suspense fallback={<PageSkeleton />}>
           <StaffList

@@ -1,6 +1,7 @@
 import { requireAdmin } from '@/lib/admin-auth';
 import { ApiErrorHandler } from '@/lib/api-error-handler';
 import { logger } from '@/lib/logger';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createTier, tierConfigSchema } from './helpers/createTier';
@@ -27,22 +28,6 @@ export async function GET(request: NextRequest) {
       ApiErrorHandler.createError('Internal server error', 'SERVER_ERROR', 500),
       { status: 500 },
     );
-  }
-}
-
-/**
- * POST /api/admin/tiers
- * Create new tier (future expansion)
- */
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Admin Tiers] Failed to parse request body:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
   }
 }
 

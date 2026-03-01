@@ -652,11 +652,11 @@ function VirtualizedList({ items }: { items: Item[] }) {
 ```typescript
 // ✅ GOOD: Debounce search input
 import { useMemo, useState } from 'react';
-import { useDebouncedValue } from '@/hooks/useDebouncedValue'; // Custom hook
+import { useDebounce } from '@/hooks/useDebounce'; // Custom hook
 
 function SearchComponent() {
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearch = useDebouncedValue(searchTerm, 300); // 300ms delay
+  const debouncedSearch = useDebounce(searchTerm, 300); // 300ms delay
 
   // Only search when debounced value changes
   useEffect(() => {

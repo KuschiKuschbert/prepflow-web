@@ -6,6 +6,7 @@
 
 import { enrichIngredientWithAllergens } from '@/lib/allergens/ai-allergen-detection';
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { requireAuth } from '@/lib/auth0-api-helpers';
 import { logger } from '@/lib/logger';
 import { supabaseAdmin } from '@/lib/supabase';
@@ -30,18 +31,6 @@ function checkRateLimit(userId: string): boolean {
   if (userLimit.count >= RATE_LIMIT_MAX) return false;
   userLimit.count++;
   return true;
-}
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Batch AI Detection] Failed to parse request JSON:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
 }
 
 export async function POST(request: NextRequest) {

@@ -11,7 +11,7 @@ Skills can evolve automatically from error-learning and RSI (Recursive Self-Impr
 
 ## Current State
 
-_Auto-generated at 2026-03-01T05:37:34.460Z_
+_Auto-generated at 2026-03-01T06:15:23.236Z_
 
 **Evolvable skills:** 5
 
@@ -25,7 +25,7 @@ _Auto-generated at 2026-03-01T05:37:34.460Z_
 
 - (none)
 
-**Mapping:** 5 error patterns, 3 RSI types
+**Mapping:** 5 error patterns, 6 RSI types
 
 ## When Evolution Runs
 

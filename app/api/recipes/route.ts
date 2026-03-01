@@ -13,7 +13,7 @@ import { buildQuery } from './helpers/buildQuery';
 import { catchRecipesHandler } from './helpers/catchHandler';
 import { filterRecipes } from './helpers/filterRecipes';
 import { resolveCreateOrUpdate } from './helpers/handleRecipeCreateOrUpdate';
-import { safeParseBody } from './helpers/parseBody';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { CreateRecipeInput, createRecipeSchema, RecipeResponse } from './helpers/schemas';
 import { validateRequest } from './helpers/validateRequest';
 

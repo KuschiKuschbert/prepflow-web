@@ -2,7 +2,7 @@
 
 import { Icon } from '@/components/ui/Icon';
 import { Toggle } from '@/components/ui/Toggle';
-import { useIsVisible } from '@/hooks/useIsVisible';
+import { useIsVisible } from '@/hooks/useIntersectionObserver';
 import { useTheme } from '@/lib/theme/useTheme';
 import { Moon, Sun } from 'lucide-react';
 import React from 'react';

@@ -1,8 +1,9 @@
 import { standardAdminChecks } from '@/lib/admin-auth';
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { parseAndValidate } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
-import { ZodSchema, z } from 'zod';
+import { z } from 'zod';
 import { buildTemperatureLogQuery } from './helpers/buildTemperatureLogQuery';
 import { createTemperatureLog } from './helpers/createTemperatureLog';
 import { handleTemperatureLogError } from './helpers/handleTemperatureLogError';
@@ -20,25 +21,6 @@ const createTemperatureLogSchema = z
     message: 'Either equipment_id or temperature_type must be provided',
     path: ['equipment_id'],
   });
-
-async function safeParseBody<T>(req: NextRequest, schema: ZodSchema<T>): Promise<T> {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch (_err) {
-    throw ApiErrorHandler.createError('Invalid request body', 'VALIDATION_ERROR', 400);
-  }
-
-  const result = schema.safeParse(body);
-  if (!result.success) {
-    throw ApiErrorHandler.createError(
-      result.error.issues[0]?.message || 'Invalid request body',
-      'VALIDATION_ERROR',
-      400,
-    );
-  }
-  return result.data;
-}
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -111,7 +93,9 @@ export async function POST(request: NextRequest) {
     if (error) return error;
     if (!supabase) return NextResponse.json({ error: 'Database unavailable' }, { status: 500 });
 
-    const validatedBody = await safeParseBody(request, createTemperatureLogSchema);
+    const parsed = await parseAndValidate(request, createTemperatureLogSchema, '[TemperatureLogs]');
+    if (!parsed.ok) return parsed.response;
+    const validatedBody = parsed.data;
 
     // Validate temperature range (reasonable values)
     if (validatedBody.temperature_celsius < -50 || validatedBody.temperature_celsius > 200) {

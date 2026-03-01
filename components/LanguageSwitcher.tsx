@@ -61,13 +61,3 @@ export default function LanguageSwitcher({
     </div>
   );
 }
-
-// Compact version for mobile
-export function LanguageSwitcherCompact({ className = '' }: { className?: string }) {
-  return <LanguageSwitcher className={className} showFlag={true} showName={false} size="sm" />;
-}
-
-// Full version for desktop
-export function LanguageSwitcherFull({ className = '' }: { className?: string }) {
-  return <LanguageSwitcher className={className} showFlag={true} showName={true} size="md" />;
-}

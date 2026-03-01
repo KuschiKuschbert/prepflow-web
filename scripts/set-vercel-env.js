@@ -119,15 +119,14 @@ const REQUIRED_VARS = {
     description: 'Supabase project URL',
     example: 'https://your-project-id.supabase.co',
     critical: true,
-    productionValue: 'https://dulkrqgjfohsuxhsmofo.supabase.co',
+    productionValue: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   },
   NEXT_PUBLIC_SUPABASE_ANON_KEY: {
     required: true,
     description: 'Supabase anonymous key (public)',
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
     critical: true,
-    productionValue:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1bGtycWdqZm9oc3V4aHNtb2ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5NzYwMDMsImV4cCI6MjA3MjU1MjAwM30.b_P98mAantymNfWy1Qz18SaR-LwrPjuaebO2Uj_5JK8',
+    productionValue: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
   },
   SUPABASE_SERVICE_ROLE_KEY: {
     required: true,

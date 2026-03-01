@@ -1,4 +1,5 @@
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { supabaseAdmin } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
@@ -9,18 +10,6 @@ import { handleRecipeIngredientsError } from './helpers/handleRecipeIngredientsE
 import { mapRecipeIngredients } from './helpers/mapRecipeIngredients';
 import { saveRecipeIngredients } from './helpers/saveRecipeIngredients';
 import type { RecipeIngredientRow, SaveRecipeIngredientInput } from './helpers/types';
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Recipes API] Failed to parse request JSON:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 export async function GET(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
   let normalizedId: string | undefined;

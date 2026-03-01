@@ -4,6 +4,7 @@
  */
 
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { requireAuth } from '@/lib/auth0-api-helpers';
 import { logger } from '@/lib/logger';
 import { createSupabaseAdmin } from '@/lib/supabase';
@@ -20,18 +21,6 @@ const scheduleBackupSchema = z.object({
 
 const DEFAULT_INTERVAL_HOURS = 24;
 const MS_IN_HOUR = 60 * 60 * 1000;
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Backup Schedule API] Failed to parse request body:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 /**
  * Configures scheduled backups.

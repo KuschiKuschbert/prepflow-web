@@ -1,31 +1,13 @@
 import { ApiErrorHandler } from '@/lib/api-error-handler';
 import { getAuthenticatedUserByEmail } from '@/lib/api-helpers/getAuthenticatedUserByEmail';
+import { parseAndValidate } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { PostgrestError } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
-import { ZodSchema, z } from 'zod';
+import { z } from 'zod';
 import { deleteEmployee } from '../helpers/deleteEmployee';
 import { handleEmployeeError } from '../helpers/handleEmployeeError';
 import { updateEmployee } from '../helpers/updateEmployee';
-
-async function safeParseBody<T>(req: NextRequest, schema: ZodSchema<T>): Promise<T> {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch (_err) {
-    throw ApiErrorHandler.createError('Invalid request body', 'VALIDATION_ERROR', 400);
-  }
-
-  const result = schema.safeParse(body);
-  if (!result.success) {
-    throw ApiErrorHandler.createError(
-      result.error.issues[0]?.message || 'Invalid request body',
-      'VALIDATION_ERROR',
-      400,
-    );
-  }
-  return result.data;
-}
 
 const updateEmployeeByIdSchema = z.object({
   full_name: z.string().optional(),
@@ -123,9 +105,10 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
     const { userId, supabaseAdmin } = await getAuthenticatedUserByEmail(request);
     const supabase = supabaseAdmin;
 
-    const body = await safeParseBody(request, updateEmployeeByIdSchema);
+    const parsed = await parseAndValidate(request, updateEmployeeByIdSchema, '[EmployeesById]');
+    if (!parsed.ok) return parsed.response;
 
-    const data = await updateEmployee(supabase, id, body, userId);
+    const data = await updateEmployee(supabase, id, parsed.data, userId);
 
     return NextResponse.json({
       success: true,

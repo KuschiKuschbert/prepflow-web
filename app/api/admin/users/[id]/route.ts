@@ -2,6 +2,7 @@ import { logAdminApiAction } from '@/lib/admin-audit';
 import { standardAdminChecks } from '@/lib/admin-auth';
 import { ApiErrorHandler } from '@/lib/api-error-handler';
 import { logger } from '@/lib/logger';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { deleteUser } from './helpers/deleteUser';
@@ -16,18 +17,6 @@ const updateUserSchema = z.object({
   subscription_status: z.enum(['trial', 'active', 'cancelled', 'past_due']).optional(),
   subscription_expires: z.string().datetime().optional().nullable(),
 });
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Admin Users API] Failed to parse request body:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 /**
  * GET /api/admin/users/[id]

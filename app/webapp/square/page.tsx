@@ -22,6 +22,8 @@ import { SyncSection } from './components/sections/SyncSection';
 import { MappingsSection } from './components/sections/MappingsSection';
 import { HistorySection } from './components/sections/HistorySection';
 import { WebhooksSection } from './components/sections/WebhooksSection';
+import { PageTipsCard } from '@/components/ui/PageTipsCard';
+import { PAGE_TIPS_CONFIG } from '@/lib/page-help/page-tips-content';
 import { PageHeader } from '../components/static/PageHeader';
 
 type SquareSection = 'overview' | 'configuration' | 'sync' | 'mappings' | 'history' | 'webhooks';
@@ -131,6 +133,12 @@ export default function SquarePage() {
           title="Square POS Integration"
           subtitle="Connect your Square POS system to sync menu items, staff, sales data, and food costs"
         />
+
+        {PAGE_TIPS_CONFIG.square && (
+          <div className="mb-6">
+            <PageTipsCard config={PAGE_TIPS_CONFIG.square} />
+          </div>
+        )}
 
         <div className="desktop:flex-row desktop:gap-8 flex flex-col">
           {/* Navigation Sidebar */}

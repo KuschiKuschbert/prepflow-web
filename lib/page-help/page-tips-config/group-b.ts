@@ -110,23 +110,4 @@ export const PAGE_TIPS_GROUP_B: Record<string, PageTipsConfig> = {
       'Country setup configures regional defaults.',
     ],
   },
-  functions: {
-    pageKey: 'functions',
-    tips: [
-      'Add customers first so you can link functions to clients.',
-      'Set event name, dates, type (wedding, corporate, etc.) and attendees.',
-      'Use the calendar to filter by date or search by client name.',
-      'Open a function to build your runsheet and track prep.',
-    ],
-  },
-  customers: {
-    pageKey: 'customers',
-    guideId: 'functions-catering',
-    tips: [
-      'Add customers before creating functions—link events to the right client.',
-      'Store contact details (email, phone) and company for quick reference.',
-      'Search to find customers fast when planning events.',
-      'Edit a customer anytime to keep details up to date.',
-    ],
-  },
 };

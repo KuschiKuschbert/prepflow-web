@@ -9,6 +9,7 @@ import { restoreFull, restoreMerge, restoreSelective } from '@/lib/backup/restor
 import type { BackupData, MergeOptions } from '@/lib/backup/types';
 import { logger } from '@/lib/logger';
 import { getAppError } from '@/lib/utils/error';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -27,18 +28,6 @@ const restoreBackupSchema = z.object({
     .optional(),
   password: z.string().optional(),
 });
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Backup Restore API] Failed to parse request body:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 /**
  * Restores from backup (full, selective, or merge).

@@ -188,7 +188,6 @@
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "react-intersection-observer": "^10.0.2",
-    "react-qr-code": "^2.0.18",
     "react-signature-canvas": "^1.0.7",
     "recharts": "^3.7.0",
     "robots-parser": "^3.0.1",

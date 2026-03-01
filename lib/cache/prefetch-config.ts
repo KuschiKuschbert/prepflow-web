@@ -44,7 +44,7 @@ export const PREFETCH_MAP: Record<string, string[]> = {
   '/webapp/order-lists': ['/api/menus', '/api/weather/operational-tip'],
   '/webapp/sections': ['/api/kitchen-sections', '/api/menu-dishes'],
   '/webapp/prep-lists': [
-    '/api/prep-lists?userId=user-123&page=1&pageSize=10',
+    '/api/prep-lists?page=1&pageSize=10',
     '/api/kitchen-sections',
     '/api/ingredients?page=1&pageSize=50',
     '/api/weather/operational-tip',
@@ -60,6 +60,16 @@ export const PREFETCH_MAP: Record<string, string[]> = {
     '/api/user/data-usage',
     '/api/user/activity?limit=5',
   ],
+  '/webapp/settings/billing': ['/api/entitlements'],
+  '/webapp/staff': ['/api/staff/employees'],
+  '/webapp/roster': ['/api/roster/templates', '/api/roster/shifts', '/api/staff/employees'],
+  '/webapp/suppliers': ['/api/suppliers'],
+  '/webapp/cogs': ['/api/recipes/catalog', '/api/ingredients/catalog'],
+  '/webapp/square': ['/api/square/status', '/api/square/config'],
+  '/webapp/calendar': ['/api/roster/shifts', '/api/functions'],
+  '/webapp/time-attendance': ['/api/time-attendance/records', '/api/staff/employees'],
+  '/webapp/specials': ['/api/recipes/catalog', '/api/ingredients/catalog'],
+  '/webapp/guide': [],
   '/webapp/setup': [],
 };
 

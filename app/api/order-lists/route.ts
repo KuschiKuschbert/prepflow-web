@@ -1,8 +1,9 @@
 import { standardAdminChecks } from '@/lib/admin-auth';
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { parseAndValidate } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
-import { z, ZodSchema } from 'zod';
+import { z } from 'zod';
 import { createOrderListWithItems } from './helpers/createOrderListWithItems';
 import { handleOrderListError } from './helpers/handleOrderListError';
 import { normalizeOrderListData } from './helpers/normalizeOrderListData';
@@ -24,24 +25,6 @@ const createOrderListSchema = z.object({
     )
     .optional(),
 });
-
-async function safeParseBody<T>(request: NextRequest, schema: ZodSchema<T>): Promise<T> {
-  try {
-    const body = await request.json();
-    const result = schema.safeParse(body);
-    if (!result.success) {
-      throw ApiErrorHandler.createError(
-        result.error.issues[0]?.message || 'Invalid request body',
-        'VALIDATION_ERROR',
-        400,
-      );
-    }
-    return result.data;
-  } catch (error) {
-    if (error instanceof Error && 'status' in error) throw error;
-    throw ApiErrorHandler.createError('Invalid JSON body', 'VALIDATION_ERROR', 400);
-  }
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -138,10 +121,9 @@ export async function POST(request: NextRequest) {
     if (error) return error;
     if (!supabase) return NextResponse.json({ error: 'Database unavailable' }, { status: 500 }); // Handle missing supabase
 
-    const { userId, supplierId, name, notes, items } = await safeParseBody(
-      request,
-      createOrderListSchema,
-    );
+    const parsed = await parseAndValidate(request, createOrderListSchema, '[OrderLists]');
+    if (!parsed.ok) return parsed.response;
+    const { userId, supplierId, name, notes, items } = parsed.data;
 
     // Convert supplierId from string to number
     const supplierIdNum = parseInt(supplierId, 10);

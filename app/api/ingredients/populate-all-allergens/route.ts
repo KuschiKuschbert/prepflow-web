@@ -6,6 +6,7 @@
  */
 
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { requireAuth } from '@/lib/auth0-api-helpers';
 import { logger } from '@/lib/logger';
 import { supabaseAdmin } from '@/lib/supabase';
@@ -20,18 +21,6 @@ const populateAllAllergensSchema = z.object({
   batch_size: z.number().int().positive().optional().default(50),
   force_ai: z.boolean().optional().default(false),
 });
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Populate All Allergens API] Failed to parse request JSON:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {

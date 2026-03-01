@@ -11,7 +11,9 @@ import { useEffect, useState } from 'react';
 import { RosterBuilder } from './components/RosterBuilder';
 import { PageHeader } from '@/app/webapp/components/static/PageHeader';
 import { PageSkeleton } from '@/components/ui/LoadingSkeleton';
+import { PageTipsCard } from '@/components/ui/PageTipsCard';
 import { logger } from '@/lib/logger';
+import { PAGE_TIPS_CONFIG } from '@/lib/page-help/page-tips-content';
 import { Calendar } from 'lucide-react';
 import type { Shift, Employee } from '@/lib/types/roster';
 
@@ -84,6 +86,11 @@ export default function RosterPage() {
         subtitle="Drag and drop shifts to build your weekly roster"
         icon={Calendar}
       />
+      {PAGE_TIPS_CONFIG.roster && (
+        <div className="mb-6">
+          <PageTipsCard config={PAGE_TIPS_CONFIG.roster} />
+        </div>
+      )}
       <RosterBuilder employees={employees} shifts={shifts} />
     </div>
   );

@@ -6,9 +6,12 @@ import { NextRequest, NextResponse } from 'next/server';
  * Helps diagnose production login issues without exposing secrets
  */
 export async function GET(request: NextRequest) {
-  // Allow access for debugging (temporary - can be secured later)
-  // In production, this helps diagnose Auth0 issues
-  // TODO: Add proper authentication/rate limiting for production use
+  if (process.env.NODE_ENV === 'production') {
+    const adminKey = request.headers.get('x-admin-key');
+    if (!adminKey || adminKey !== process.env.SEED_ADMIN_KEY) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  }
 
   const auth0BaseUrl = process.env.AUTH0_BASE_URL;
   const expectedCallbackUrl = auth0BaseUrl ? `${auth0BaseUrl}/api/auth/callback` : 'NOT SET';

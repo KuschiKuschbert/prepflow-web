@@ -11,6 +11,8 @@ import { useEffect, useState } from 'react';
 import { ClockIn } from './components/ClockIn';
 import { PageHeader } from '@/app/webapp/components/static/PageHeader';
 import { PageSkeleton } from '@/components/ui/LoadingSkeleton';
+import { PageTipsCard } from '@/components/ui/PageTipsCard';
+import { PAGE_TIPS_CONFIG } from '@/lib/page-help/page-tips-content';
 import { Clock } from 'lucide-react';
 import { logger } from '@/lib/logger';
 import type { Employee, Shift } from '@/lib/types/roster';
@@ -95,6 +97,11 @@ export default function TimeAttendancePage() {
         subtitle="Clock in and out with geofencing validation"
         icon={Clock}
       />
+      {PAGE_TIPS_CONFIG['time-attendance'] && (
+        <div className="mb-6">
+          <PageTipsCard config={PAGE_TIPS_CONFIG['time-attendance']} />
+        </div>
+      )}
       <div className="mx-auto max-w-2xl">
         <ClockIn employee={employee} shift={currentShift || undefined} />
       </div>
