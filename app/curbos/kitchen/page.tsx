@@ -3,7 +3,7 @@
 import { ChefHat, Clock } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
-import QRCode from 'react-qr-code'
+import { QRCodeSVG as QRCode } from 'qrcode.react'
 import { KitchenOrderCard } from './components/KitchenOrderCard'
 import { useKitchenOrders } from './hooks/useKitchenOrders'
 import { Transaction } from './types'
