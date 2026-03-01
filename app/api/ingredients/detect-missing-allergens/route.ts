@@ -5,6 +5,7 @@
  */
 
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { supabaseAdmin } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
@@ -17,18 +18,6 @@ const detectMissingAllergensSchema = z.object({
   ingredient_ids: z.array(z.string()).optional(),
   force: z.boolean().optional().default(false),
 });
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Detect Missing Allergens API] Failed to parse request JSON:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 /**
  * Detects allergens for ingredients missing them.

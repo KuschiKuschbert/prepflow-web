@@ -1,4 +1,5 @@
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -7,18 +8,6 @@ import { fetchDishes } from './helpers/fetchDishes';
 import { fetchDishIngredients } from './helpers/fetchDishIngredients';
 import { fetchDishRecipes } from './helpers/fetchDishRecipes';
 import { validateRequest } from './helpers/validateRequest';
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Dishes Batch Cost API] Failed to parse request JSON:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 const batchCostSchema = z.object({
   dishIds: z

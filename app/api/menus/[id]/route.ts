@@ -1,4 +1,5 @@
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -11,18 +12,6 @@ import { updateMenu } from './helpers/updateMenu';
 import { validateMenuId } from './helpers/validateMenuId';
 
 import { getAuthenticatedUser } from '@/lib/server/get-authenticated-user';
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Menus API] Failed to parse request JSON:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 export async function GET(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id: menuId } = await context.params;

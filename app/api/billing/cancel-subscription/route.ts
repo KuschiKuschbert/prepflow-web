@@ -3,6 +3,7 @@ import { requireAuth } from '@/lib/auth0-api-helpers';
 import { clearTierCache } from '@/lib/feature-gate';
 import { logger } from '@/lib/logger';
 import { getStripe } from '@/lib/stripe';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { NextRequest, NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 import { z } from 'zod';
@@ -15,18 +16,6 @@ import { updateSubscriptionInDatabase } from './helpers/updateDatabase';
 const cancelSubscriptionSchema = z.object({
   immediate: z.boolean().optional().default(false),
 });
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Billing API] Failed to parse request JSON:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 /**
  * POST /api/billing/cancel-subscription

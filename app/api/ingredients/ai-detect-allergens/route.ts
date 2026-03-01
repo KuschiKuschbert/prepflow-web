@@ -6,6 +6,7 @@
 
 import { detectAllergensHybrid } from '@/lib/allergens/hybrid-allergen-detection';
 import { ApiErrorHandler } from '@/lib/api-error-handler';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -15,18 +16,6 @@ const detectAllergensSchema = z.object({
   brand: z.string().optional(),
   force_ai: z.boolean().optional(),
 });
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[AI Allergen Detection API] Failed to parse request JSON:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {

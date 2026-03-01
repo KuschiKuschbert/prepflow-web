@@ -1,5 +1,6 @@
 import { ApiErrorHandler } from '@/lib/api-error-handler';
 import { groupBy } from '@/lib/api/batch-utils';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { logger } from '@/lib/logger';
 import { supabaseAdmin } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
@@ -8,18 +9,6 @@ import { z } from 'zod';
 import { handleMissingNestedIngredients } from './helpers/missing-ingredients';
 import { batchRecipeIdsSchema } from './helpers/schemas';
 import { BatchIngredientData, BatchRecipeIngredientRow } from './helpers/types';
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Recipes API] Failed to parse request JSON:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {

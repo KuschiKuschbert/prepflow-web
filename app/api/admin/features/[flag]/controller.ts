@@ -1,6 +1,7 @@
 import { ApiErrorHandler } from '@/lib/api-error-handler';
 import { logger } from '@/lib/logger';
 import { supabaseAdmin } from '@/lib/supabase';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -8,18 +9,6 @@ export const updateFlagSchema = z.object({
   enabled: z.boolean(),
   user_id: z.string().uuid().optional().nullable(),
 });
-
-// Helper to safely parse request body
-export async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Admin Features API] Failed to parse request body:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return {};
-  }
-}
 
 /** Query builder with eq/is filter methods - generic to preserve Supabase chain types */
 function applyUserFilter<

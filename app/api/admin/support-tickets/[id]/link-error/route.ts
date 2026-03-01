@@ -2,24 +2,13 @@ import { standardAdminChecks } from '@/lib/admin-auth';
 import { ApiErrorHandler } from '@/lib/api-error-handler';
 import { logger } from '@/lib/logger';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { safeParseBody } from '@/lib/api/parse-request-body';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 const linkErrorSchema = z.object({
   error_id: z.string().uuid(),
 });
-
-// Helper to safely parse request body
-async function safeParseBody(request: NextRequest) {
-  try {
-    return await request.json();
-  } catch (err) {
-    logger.warn('[Admin Support Tickets API] Failed to parse request body:', {
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return null;
-  }
-}
 
 /**
  * POST /api/admin/support-tickets/[id]/link-error
