@@ -4,6 +4,7 @@ ALTER VIEW "public"."pos_menu_items" SET (security_invoker = true);
 ALTER VIEW "public"."pos_customers" SET (security_invoker = true);
 
 -- Enable Row Level Security (RLS) on public tables
+ALTER TABLE "public"."daily_weather_logs" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."employee_qualifications" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."qualification_types" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."haccp_records" ENABLE ROW LEVEL SECURITY;
