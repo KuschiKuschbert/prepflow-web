@@ -1,6 +1,7 @@
 'use client';
 import { useErrorMessageSelector } from '@/components/ErrorGame/useErrorMessageSelector';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import * as Sentry from '@sentry/nextjs';
 
 import { logger } from '@/lib/logger';
 
@@ -38,12 +39,18 @@ export class ErrorBoundary extends Component<Props, State> {
       componentStack: errorInfo.componentStack,
     });
 
+    // Report to Sentry with component stack context
+    Sentry.withScope(scope => {
+      scope.setContext('react', { componentStack: errorInfo.componentStack });
+      scope.setTag('error_boundary', 'true');
+      Sentry.captureException(error);
+    });
+
     // Call custom error handler if provided
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
 
-    // Log to analytics if available
     // Log to analytics if available
     const win = window as unknown as {
       gtag?: (command: string, action: string, params: Record<string, unknown>) => void;
@@ -112,7 +119,8 @@ export const useErrorHandler = () => {
   const handleError = React.useCallback((error: Error, errorInfo?: ErrorInfo) => {
     logger.error('Error caught by useErrorHandler:', { error, errorInfo });
 
-    // Log to analytics if available
+    Sentry.captureException(error);
+
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'exception', {
         description: error.message,

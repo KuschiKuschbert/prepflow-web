@@ -4,11 +4,21 @@
  */
 
 import { logger } from '@/lib/logger';
-import { detectAllergensFromText, consolidateAllergens } from './australian-allergens';
+import { trackAllergenDetection } from '@/lib/sentry-metrics';
+import {
+  detectAllergensFromTextWithSource,
+  consolidateAllergens,
+  mapToConsolidatedCode,
+} from './australian-allergens';
 import { detectAllergensFromIngredient, AIAllergenDetectionResult } from './ai-allergen-detection';
+
+/** Per-allergen source: how each individual allergen was detected */
+export type AllergenDetectionSource = 'manual' | 'ai' | 'keyword';
 
 export interface HybridAllergenDetectionResult {
   allergens: string[];
+  /** Maps each allergen code to how it was detected */
+  perAllergen: Record<string, AllergenDetectionSource>;
   composition?: string;
   confidence: 'high' | 'medium' | 'low';
   method: 'non-ai' | 'ai' | 'hybrid';
@@ -85,10 +95,15 @@ export async function detectAllergensHybrid(
   const trimmedName = ingredientName.trim();
   const trimmedBrand = brand?.trim();
 
-  // Step 1: Try non-AI keyword-based detection
-  const nonAIAllergens = detectAllergensFromText(trimmedName);
-  const brandAllergens = trimmedBrand ? detectAllergensFromText(trimmedBrand) : [];
-  const allNonAIAllergens = [...new Set([...nonAIAllergens, ...brandAllergens])];
+  // Step 1: Keyword-based detection with per-allergen source tracking
+  const nameKeywords = detectAllergensFromTextWithSource(trimmedName);
+  const brandKeywords = trimmedBrand ? detectAllergensFromTextWithSource(trimmedBrand) : {};
+  // Merge name and brand keyword results — all tagged as 'keyword'
+  const keywordPerAllergen: Record<string, AllergenDetectionSource> = {
+    ...brandKeywords,
+    ...nameKeywords,
+  };
+  const allNonAIAllergens = Object.keys(keywordPerAllergen);
 
   logger.dev(
     `[Hybrid Allergen Detection] Non-AI detection found ${allNonAIAllergens.length} allergens for: ${trimmedName}`,
@@ -101,9 +116,10 @@ export async function detectAllergensHybrid(
     (allNonAIAllergens.length === 0 && trimmedBrand && trimmedBrand.length > 0);
 
   if (!shouldUseAI) {
-    // Non-AI detection is sufficient
+    trackAllergenDetection(allNonAIAllergens.length > 0 ? 'keyword' : 'none');
     return {
       allergens: allNonAIAllergens,
+      perAllergen: keywordPerAllergen,
       confidence: allNonAIAllergens.length > 0 ? 'high' : 'medium',
       method: 'non-ai',
       cached: false,
@@ -121,21 +137,19 @@ export async function detectAllergensHybrid(
     trimmedBrand,
   );
 
-  // Step 4: Merge non-AI and AI results and consolidate
-  const mergedAllergens = consolidateAllergens([
-    ...allNonAIAllergens,
-    ...aiResult.allergens.map(code => {
-      // Map old codes from AI to consolidated codes
-      const mapping: Record<string, string> = {
-        crustacea: 'shellfish',
-        molluscs: 'shellfish',
-        peanuts: 'nuts',
-        tree_nuts: 'nuts',
-        wheat: 'gluten',
-      };
-      return mapping[code] || code;
-    }),
-  ]);
+  // Step 4: Merge keyword and AI results into a unified perAllergen map
+  // Keyword results are tagged 'keyword'; AI-only results are tagged 'ai'
+  const mergedPerAllergen: Record<string, AllergenDetectionSource> = { ...keywordPerAllergen };
+  aiResult.allergens.forEach(code => {
+    const consolidated = mapToConsolidatedCode(code);
+    if (!mergedPerAllergen[consolidated]) {
+      // AI found this allergen but keyword scan didn't — tag as 'ai'
+      mergedPerAllergen[consolidated] = 'ai';
+    }
+    // If keyword already found it, keep 'keyword' (more deterministic)
+  });
+
+  const mergedAllergens = consolidateAllergens(Object.keys(mergedPerAllergen));
 
   // Determine confidence and method
   let confidence: 'high' | 'medium' | 'low' = 'medium';
@@ -143,29 +157,28 @@ export async function detectAllergensHybrid(
   let reason: string | undefined;
 
   if (allNonAIAllergens.length > 0 && aiResult.allergens.length > 0) {
-    // Both methods found allergens
     method = 'hybrid';
     confidence = 'high';
     reason = `Detected using keyword matching and AI (${allNonAIAllergens.length} from keywords, ${aiResult.allergens.length} from AI)`;
   } else if (allNonAIAllergens.length > 0) {
-    // Only non-AI found allergens
     method = 'non-ai';
     confidence = 'high';
     reason = 'Detected using keyword matching';
   } else if (aiResult.allergens.length > 0) {
-    // Only AI found allergens
     method = 'ai';
     confidence = aiResult.confidence;
     reason = `Detected using AI (${aiResult.allergens.length} allergens found)`;
   } else {
-    // No allergens found
     method = 'hybrid';
     confidence = 'medium';
     reason = 'No allergens detected using keyword matching or AI';
   }
 
+  trackAllergenDetection(method === 'non-ai' ? 'keyword' : method);
+
   return {
     allergens: mergedAllergens,
+    perAllergen: mergedPerAllergen,
     composition: aiResult.composition,
     confidence,
     method,
@@ -178,37 +191,44 @@ export async function detectAllergensHybrid(
  * Enrich ingredient with allergens using hybrid detection
  * Merges manual allergens with detected allergens
  */
+/** The full allergen_source shape stored in the database */
+export interface AllergenSourceRecord {
+  manual?: boolean;
+  ai?: boolean;
+  non_ai?: boolean;
+  hybrid?: boolean;
+  ai_detected_at?: string;
+  /** Per-allergen detection source map (added in v2) */
+  perAllergen?: Record<string, AllergenDetectionSource>;
+}
+
 export async function enrichIngredientWithAllergensHybrid(ingredient: {
   ingredient_name: string;
   brand?: string;
   allergens?: string[];
-  allergen_source?: {
-    manual?: boolean;
-    ai?: boolean;
-  };
+  allergen_source?: AllergenSourceRecord;
   forceAI?: boolean;
 }): Promise<{
   allergens: string[];
-  allergen_source: {
-    manual: boolean;
-    ai: boolean;
-    non_ai?: boolean;
-    hybrid?: boolean;
-    ai_detected_at?: string;
-  };
+  allergen_source: AllergenSourceRecord;
   composition?: string;
   confidence?: 'high' | 'medium' | 'low';
   method?: 'non-ai' | 'ai' | 'hybrid';
 }> {
   const existingAllergens = ingredient.allergens || [];
-  // Check if allergens are manually set (not AI-detected)
   const isManuallySet =
     ingredient.allergen_source &&
     typeof ingredient.allergen_source === 'object' &&
     ingredient.allergen_source.manual === true;
 
-  // If ingredient has manually set allergens, don't re-detect
+  // Manually set allergens are not re-detected — preserve them with their perAllergen map
   if (isManuallySet && existingAllergens.length > 0) {
+    const existingPerAllergen = ingredient.allergen_source?.perAllergen ?? {};
+    // Any allergen not yet in perAllergen is assumed 'manual'
+    const perAllergen: Record<string, AllergenDetectionSource> = { ...existingPerAllergen };
+    existingAllergens.forEach(code => {
+      if (!perAllergen[code]) perAllergen[code] = 'manual';
+    });
     return {
       allergens: existingAllergens,
       allergen_source: {
@@ -216,29 +236,30 @@ export async function enrichIngredientWithAllergensHybrid(ingredient: {
         ai: ingredient.allergen_source?.ai || false,
         non_ai: false,
         hybrid: false,
+        perAllergen,
       },
     };
   }
 
-  // If allergens exist but weren't manually set, we can still re-detect or use existing
-  // But for new ingredients without allergens, always detect
-
-  // Use hybrid detection
   const detectionResult = await detectAllergensHybrid(
     ingredient.ingredient_name,
     ingredient.brand,
     ingredient.forceAI || false,
   );
 
-  // Merge existing and detected allergens (consolidate and deduplicate)
-  // If existing allergens were AI-detected, we can re-detect and merge
-  // If no existing allergens, use detected ones
   const allAllergens = consolidateAllergens([...existingAllergens, ...detectionResult.allergens]);
+
+  // Merge perAllergen maps — existing manual entries take precedence
+  const existingPerAllergen = ingredient.allergen_source?.perAllergen ?? {};
+  const mergedPerAllergen: Record<string, AllergenDetectionSource> = {
+    ...detectionResult.perAllergen,
+    ...existingPerAllergen, // existing (manual) entries override detected entries
+  };
 
   return {
     allergens: allAllergens,
     allergen_source: {
-      manual: isManuallySet ?? false, // Preserve manual flag if it was manually set
+      manual: isManuallySet ?? false,
       ai:
         detectionResult.method === 'ai' ||
         detectionResult.method === 'hybrid' ||
@@ -246,7 +267,7 @@ export async function enrichIngredientWithAllergensHybrid(ingredient: {
         false,
       non_ai: detectionResult.method === 'non-ai' || detectionResult.method === 'hybrid',
       hybrid: detectionResult.method === 'hybrid',
-      // ai_detected_at is not part of the allergen_source type, so we don't include it here
+      perAllergen: mergedPerAllergen,
     },
     composition: detectionResult.composition,
     confidence: detectionResult.confidence,

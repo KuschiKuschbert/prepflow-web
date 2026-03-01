@@ -1,8 +1,10 @@
 /**
  * Allergen Display Component
- * Displays an array of allergens as badges
+ * Displays an array of allergens as badges, with per-allergen source indicators
+ * when the enriched allergen_source.perAllergen map is provided.
  */
 
+import type { AllergenDetectionSource } from '@/lib/allergens/hybrid-allergen-detection';
 import { AllergenBadge } from './AllergenBadge';
 
 interface AllergenDisplayProps {
@@ -10,12 +12,31 @@ interface AllergenDisplayProps {
   allergenSource?: {
     manual?: boolean;
     ai?: boolean;
+    /** Per-allergen detection source map (v2+) */
+    perAllergen?: Record<string, AllergenDetectionSource>;
   };
   showEmpty?: boolean;
   emptyMessage?: string;
   className?: string;
   size?: 'sm' | 'md' | 'lg';
+  /** When true, shows grouped sections by detection source with a legend */
   groupBySource?: boolean;
+}
+
+/** Derive the source for a single allergen code from the allergen_source record */
+function resolveAllergenSource(
+  allergenCode: string,
+  allergenSource?: AllergenDisplayProps['allergenSource'],
+): AllergenDetectionSource | undefined {
+  if (!allergenSource) return undefined;
+  // Prefer per-allergen granular data (v2)
+  if (allergenSource.perAllergen?.[allergenCode]) {
+    return allergenSource.perAllergen[allergenCode];
+  }
+  // Fall back to global flags
+  if (allergenSource.manual) return 'manual';
+  if (allergenSource.ai) return 'ai';
+  return undefined;
 }
 
 export function AllergenDisplay({
@@ -36,50 +57,67 @@ export function AllergenDisplay({
     );
   }
 
-  // Group allergens by source if requested
+  // Grouped view: separate sections per source with a small legend
   if (groupBySource && allergenSource) {
-    const manualAllergens: string[] = [];
-    const aiAllergens: string[] = [];
+    const bySource: Record<AllergenDetectionSource, string[]> = {
+      manual: [],
+      keyword: [],
+      ai: [],
+    };
 
-    // Note: We can't determine which specific allergens are AI-detected vs manual
-    // So we'll show all with AI indicator if any were AI-detected
-    const hasAIDetection = allergenSource.ai === true;
-
-    allergens.forEach(allergen => {
-      if (hasAIDetection) {
-        aiAllergens.push(allergen);
-      } else {
-        manualAllergens.push(allergen);
-      }
+    allergens.forEach(code => {
+      const src = resolveAllergenSource(code, allergenSource) ?? 'manual';
+      bySource[src].push(code);
     });
 
+    const hasMixed =
+      (bySource.manual.length > 0 ? 1 : 0) +
+        (bySource.keyword.length > 0 ? 1 : 0) +
+        (bySource.ai.length > 0 ? 1 : 0) >
+      1;
+
     return (
-      <div className={`flex flex-wrap gap-2 ${className}`}>
-        {manualAllergens.length > 0 && (
+      <div className={`flex flex-col gap-2 ${className}`}>
+        {bySource.manual.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            {manualAllergens.map(allergen => (
-              <AllergenBadge key={allergen} allergenCode={allergen} source="manual" size={size} />
+            {bySource.manual.map(code => (
+              <AllergenBadge key={code} allergenCode={code} source="manual" size={size} />
             ))}
           </div>
         )}
-        {aiAllergens.length > 0 && (
+        {bySource.keyword.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            {aiAllergens.map(allergen => (
-              <AllergenBadge key={allergen} allergenCode={allergen} source="ai" size={size} />
+            {bySource.keyword.map(code => (
+              <AllergenBadge key={code} allergenCode={code} source="keyword" size={size} />
             ))}
           </div>
+        )}
+        {bySource.ai.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {bySource.ai.map(code => (
+              <AllergenBadge key={code} allergenCode={code} source="ai" size={size} />
+            ))}
+          </div>
+        )}
+        {hasMixed && (
+          <p className="text-xs text-gray-500">
+            🔍 keyword match &nbsp;·&nbsp; ✨ AI analysis &nbsp;·&nbsp; no icon = manually confirmed
+          </p>
         )}
       </div>
     );
   }
 
-  // Default: show all allergens
-  const source = allergenSource?.ai ? 'ai' : 'manual';
-
+  // Default flat view — show each badge with its individual source
   return (
     <div className={`flex flex-wrap gap-2 ${className}`}>
-      {allergens.map(allergen => (
-        <AllergenBadge key={allergen} allergenCode={allergen} source={source} size={size} />
+      {allergens.map(code => (
+        <AllergenBadge
+          key={code}
+          allergenCode={code}
+          source={resolveAllergenSource(code, allergenSource)}
+          size={size}
+        />
       ))}
     </div>
   );

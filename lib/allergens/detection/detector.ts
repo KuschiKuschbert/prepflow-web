@@ -34,29 +34,28 @@ export async function detectAllergensFromIngredient(
   }
 
   try {
-    // Build prompt for AI
-    const allergenList = AUSTRALIAN_ALLERGENS.map(a => a.displayName).join(', ');
-    const prompt = `Analyze this ingredient and identify which Australian FSANZ allergens are present.
+    // Build structured prompt requesting JSON output for reliable parsing
+    const allergenNames = AUSTRALIAN_ALLERGENS.map(a => a.displayName).join(', ');
+    const prompt = `Analyze this food ingredient for Australian FSANZ allergens and respond ONLY with valid JSON.
 
 Ingredient: ${ingredientName}${brand ? ` (Brand: ${brand})` : ''}
 
-The 14 major allergens are: ${allergenList}
+Valid allergen names: ${allergenNames}
 
-Please provide:
-1. The composition/ingredients list (if this is a processed ingredient)
-2. Which allergens are present (if any)
+Respond ONLY with this exact JSON format (no other text):
+{"composition":["ingredient1","ingredient2"],"allergens":["Nuts","Milk"]}
 
-Format your response as:
-Composition: [list of ingredients if processed, or "single ingredient" if not]
-Allergens: [comma-separated list of allergen names, or "none" if no allergens]
-
-Be thorough and check for hidden allergens in processed ingredients.`;
+Rules:
+- "composition" lists the ingredient's sub-components if it is a processed/mixed product, or ["single ingredient"] if it is a raw ingredient
+- "allergens" lists ONLY names from the valid allergen names list above
+- If no allergens are present, use: {"composition":["single ingredient"],"allergens":[]}
+- Check for hidden allergens (e.g. soy lecithin, whey, barley malt)`;
 
     const messages = [
       {
         role: 'system' as const,
         content:
-          'You are a food safety expert analyzing ingredients for allergen content according to Australian FSANZ standards. Be precise and thorough.',
+          'You are a food safety expert analyzing ingredients for allergen content according to Australian FSANZ standards. Always respond with valid JSON only — no explanation, no preamble.',
       },
       {
         role: 'user' as const,
@@ -75,15 +74,23 @@ Be thorough and check for hidden allergens in processed ingredients.`;
     }
 
     const content = result.content;
-    const { allergens, composition } = parseAIResponse(content);
+    const { allergens, composition, parsedAsJson } = parseAIResponse(content);
 
     // Cache the result
     await cacheComposition(ingredientName, brand || null, allergens, composition);
 
+    // Confidence: high if JSON was parsed cleanly with allergens, medium otherwise
+    let confidence: 'high' | 'medium' | 'low' = 'low';
+    if (parsedAsJson && allergens.length > 0) {
+      confidence = 'high';
+    } else if (parsedAsJson || allergens.length > 0) {
+      confidence = 'medium';
+    }
+
     return {
       allergens,
       composition,
-      confidence: allergens.length > 0 ? 'high' : 'medium',
+      confidence,
       cached: false,
     };
   } catch (err) {

@@ -1,12 +1,19 @@
 /**
  * Allergen Badge Component
- * Displays a single allergen with icon and optional AI detection indicator
+ * Displays a single allergen with icon and detection-source indicator.
+ *
+ * Sources:
+ *  - 'manual'  → no indicator (user confirmed)
+ *  - 'keyword' → subtle Search icon (keyword match)
+ *  - 'ai'      → Sparkles icon (AI analysis)
  */
 
 import { getAllergenDisplayName, getAllergen } from '@/lib/allergens/australian-allergens';
+import type { AllergenDetectionSource } from '@/lib/allergens/hybrid-allergen-detection';
 import { Icon } from './Icon';
 import {
   Sparkles,
+  Search,
   Nut,
   Milk,
   Egg,
@@ -20,7 +27,6 @@ import {
   LucideIcon,
 } from 'lucide-react';
 
-// Icon mapping for allergens
 const ALLERGEN_ICONS: Record<string, LucideIcon> = {
   nuts: Nut,
   milk: Milk,
@@ -28,16 +34,22 @@ const ALLERGEN_ICONS: Record<string, LucideIcon> = {
   soy: Bean,
   gluten: Wheat,
   fish: Fish,
-  shellfish: Fish, // Using Fish icon for shellfish
+  shellfish: Fish,
   sesame: CircleDot,
   lupin: Flower,
   sulphites: AlertTriangle,
   mustard: Circle,
 };
 
+const SOURCE_TOOLTIP: Record<AllergenDetectionSource, string> = {
+  manual: 'Manually confirmed',
+  keyword: 'Detected by keyword match',
+  ai: 'Detected by AI analysis',
+};
+
 interface AllergenBadgeProps {
   allergenCode: string;
-  source?: 'manual' | 'ai';
+  source?: AllergenDetectionSource;
   className?: string;
   size?: 'sm' | 'md' | 'lg';
 }
@@ -50,7 +62,7 @@ export function AllergenBadge({
 }: AllergenBadgeProps) {
   const allergen = getAllergen(allergenCode);
   const displayName = allergen?.displayName || getAllergenDisplayName(allergenCode);
-  const IconComponent = allergen?.icon ? ALLERGEN_ICONS[allergen.icon] : undefined;
+  const IconComponent = ALLERGEN_ICONS[allergenCode] ?? undefined;
 
   const sizeClasses = {
     sm: 'text-xs px-2 py-0.5',
@@ -64,10 +76,13 @@ export function AllergenBadge({
     lg: 'md' as const,
   };
 
+  const baseDescription = allergen?.description || displayName;
+  const tooltipText = source ? `${baseDescription} · ${SOURCE_TOOLTIP[source]}` : baseDescription;
+
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full border border-[var(--primary)]/20 bg-[var(--primary)]/10 text-[var(--primary)] ${sizeClasses[size]} ${className}`}
-      title={allergen?.description || displayName}
+      title={tooltipText}
     >
       {IconComponent && (
         <Icon
@@ -82,8 +97,16 @@ export function AllergenBadge({
         <Icon
           icon={Sparkles}
           size="xs"
-          className="text-[var(--primary)]"
+          className="text-[var(--primary)] opacity-70"
           aria-label="AI detected"
+        />
+      )}
+      {source === 'keyword' && (
+        <Icon
+          icon={Search}
+          size="xs"
+          className="text-[var(--primary)] opacity-50"
+          aria-label="Keyword detected"
         />
       )}
     </span>

@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import * as Sentry from '@sentry/nextjs';
 import { useErrorMessageSelector } from '@/components/ErrorGame/useErrorMessageSelector';
 import { usePathname } from 'next/navigation';
 
@@ -9,9 +10,14 @@ interface GlobalErrorProps {
   reset: () => void;
 }
 
-export default function GlobalError({ error: _error, reset: _reset }: GlobalErrorProps) {
+export default function GlobalError({ error, reset }: GlobalErrorProps) {
   const pathname = usePathname();
   const ErrorComponent = useErrorMessageSelector();
+
+  // Report the error to Sentry once on mount
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
 
   if (
     pathname &&
@@ -25,11 +31,36 @@ export default function GlobalError({ error: _error, reset: _reset }: GlobalErro
       </html>
     );
   }
+
   return (
     <html>
       <body>
         {/* eslint-disable-next-line react-hooks/static-components */}
         <ErrorComponent />
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '2rem',
+            right: '2rem',
+            zIndex: 9999,
+          }}
+        >
+          <button
+            onClick={reset}
+            style={{
+              padding: '0.5rem 1.25rem',
+              borderRadius: '9999px',
+              background: '#29E7CD',
+              color: '#0a0a0a',
+              fontWeight: 600,
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+            }}
+          >
+            Try again
+          </button>
+        </div>
       </body>
     </html>
   );

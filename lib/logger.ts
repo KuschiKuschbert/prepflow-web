@@ -1,16 +1,14 @@
-/**
- * Logger utilities - re-exported from specialized modules.
- */
+/** Logger utilities - re-exported from specialized modules. */
 
 import { detectCategory } from './error-detection/category-detector';
 import { detectSeverity } from './error-detection/severity-detector';
 import { createLogEntry, formatLogEntry, type ErrorContext } from './logger/logEntry';
+import { reportToSentry, addSentryBreadcrumb } from './logger/sentry-reporter';
+
+export type { ErrorContext } from './logger/logEntry';
 
 const isDev = process.env.NODE_ENV === 'development';
 const enableProdLogs = process.env.NEXT_PUBLIC_ENABLE_PROD_LOGS === 'true';
-
-// Re-export types
-export type { ErrorContext } from './logger/logEntry';
 
 /**
  * Store error in admin_error_logs table (non-blocking).
@@ -114,12 +112,18 @@ export const logger = {
 
     // Store error in database for admin viewing
     storeErrorInDatabase(message, context, logError);
+
+    // Report to Sentry (non-blocking, fails silently if Sentry is not configured)
+    reportToSentry(logError ?? message, context);
   },
 
   warn: (message: string, context?: ErrorContext | unknown): void => {
     const entry = createLogEntry('warn', message, context);
     const formatted = formatLogEntry(entry);
     console.warn(`[WARN] ${formatted}`);
+
+    // Add a breadcrumb to Sentry so warnings appear in error context
+    addSentryBreadcrumb(message, context);
   },
 
   info: (message: string, context?: ErrorContext | unknown): void => {
