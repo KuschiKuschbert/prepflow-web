@@ -87,7 +87,7 @@ jobs:
           fi
 
       - name: Upload performance results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always() && steps.perf_artifacts.outputs.has_artifacts == 'true'
         with:
           name: performance-results
