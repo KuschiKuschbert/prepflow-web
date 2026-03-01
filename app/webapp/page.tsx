@@ -12,9 +12,13 @@ import { Suspense, useEffect, useState } from 'react';
 import { PageHeader } from './components/static/PageHeader';
 
 // Static imports - needed immediately
-import QuickActions from './components/QuickActions';
 import { TargetProgressWidget } from './components/TargetProgressWidget';
 import { WeatherOperationalTip } from './components/WeatherOperationalTip';
+
+const QuickActions = dynamic(() => import('./components/QuickActions'), {
+  ssr: false,
+  loading: () => <div className="h-48 animate-pulse rounded-3xl bg-[#1f1f1f]" />,
+});
 
 // Dynamic imports - lazy load heavy dashboard components
 const DashboardStatsClient = dynamic(() => import('./components/DashboardStatsClient'), {

@@ -3,7 +3,12 @@
  */
 'use client';
 
-import { QRCodeSVG } from 'qrcode.react';
+import dynamic from 'next/dynamic';
+
+const QRCodeSVG = dynamic(() => import('qrcode.react').then(m => ({ default: m.QRCodeSVG })), {
+  ssr: false,
+  loading: () => <div className="h-12 w-12 animate-pulse rounded bg-[#2a2a2a]" />,
+});
 
 interface RecipeCardQRProps {
   recipeUrl: string;

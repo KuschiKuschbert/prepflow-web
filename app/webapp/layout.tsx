@@ -7,7 +7,6 @@ import { useSessionTimeout } from '@/hooks/useSessionTimeout';
 import { logger } from '@/lib/logger';
 import { useTheme } from '@/lib/theme/useTheme';
 import { useTranslation } from '@/lib/useTranslation';
-import { Inter } from 'next/font/google';
 import React, { useCallback, useEffect, useState } from 'react';
 import { CountryProvider } from '../../contexts/CountryContext';
 import { GlobalWarningProvider, useGlobalWarning } from '../../contexts/GlobalWarningContext';
@@ -29,13 +28,6 @@ import {
   SessionTimeoutWarning,
   WebappBackground,
 } from './components/webapp-dynamic-imports';
-
-// Google Fonts with performance-optimized configuration
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap', // Prevents layout shift by showing fallback font until Inter loads
-  preload: true,
-});
 
 export default function WebAppLayout({
   children,
@@ -174,7 +166,7 @@ function WebAppLayoutContent({
   const { theme } = useTheme();
 
   return (
-    <div className={`${inter.className} min-h-screen bg-transparent text-[var(--foreground)]`}>
+    <div className="min-h-screen bg-transparent font-[family-name:var(--font-geist-sans)] text-[var(--foreground)]">
       {/* Base background - theme-aware (dark: #0a0a0a, light: #ffffff) */}
       <div className="fixed inset-0 -z-20 bg-[var(--background)]" aria-hidden={true} />
 

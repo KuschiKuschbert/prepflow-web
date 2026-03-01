@@ -5,9 +5,14 @@
 
 'use client';
 
-import { LogoWatermark } from '@/components/ui/LogoWatermark';
 import { backgroundTheme } from '@/lib/theme';
+import dynamic from 'next/dynamic';
 import React from 'react';
+
+const LogoWatermark = dynamic(
+  () => import('@/components/ui/LogoWatermark').then(m => ({ default: m.LogoWatermark })),
+  { ssr: false },
+);
 
 const LandingBackground = React.memo(function LandingBackground() {
   const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });

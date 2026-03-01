@@ -1,7 +1,6 @@
 'use client';
 
 import { MagneticButton } from '@/components/ui/MagneticButton';
-import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { logger } from '@/lib/logger';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Image from 'next/image';
@@ -59,22 +58,18 @@ export default function Hero({ onTourClick: _onTourClick, trackEngagement }: Her
   return (
     <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden bg-transparent">
       <div className="tablet:py-20 mx-auto w-full max-w-7xl px-6 py-16 text-center">
-        {/* Headline - MacBook Pro Style */}
-        <ScrollReveal variant="fade-up" className="mb-12">
+        {/* Headline - rendered immediately for fastest LCP */}
+        <div className="mb-12">
           <h1 className="text-fluid-5xl tablet:text-fluid-6xl desktop:text-fluid-7xl large-desktop:text-fluid-7xl xl:text-fluid-8xl font-light tracking-tight text-white">
             PrepFlow
           </h1>
           <p className="text-fluid-xl tablet:text-fluid-2xl desktop:text-fluid-3xl mt-8 font-light text-gray-300">
             Know your costs. Price with confidence.
           </p>
-        </ScrollReveal>
+        </div>
 
-        {/* CTAs - MacBook Pro Style */}
-        <ScrollReveal
-          variant="fade-up"
-          delay={0.2}
-          className="tablet:flex-row mt-16 flex flex-col items-center justify-center gap-4"
-        >
+        {/* CTAs */}
+        <div className="tablet:flex-row mt-16 flex flex-col items-center justify-center gap-4">
           {isAuthenticated ? (
             <MagneticButton
               onClick={handleGoToDashboard}
@@ -107,7 +102,7 @@ export default function Hero({ onTourClick: _onTourClick, trackEngagement }: Her
               </MagneticButton>
             </>
           )}
-        </ScrollReveal>
+        </div>
 
         {/* Dashboard Screenshot - MacBook Pro Style */}
         {/* Dashboard Screenshot - MacBook Pro Style */}
@@ -122,8 +117,7 @@ export default function Hero({ onTourClick: _onTourClick, trackEngagement }: Her
                 height={1080}
                 className="h-auto w-full"
                 priority
-                decoding="sync" // Force synchronous decoding for LCP
-                fetchPriority="high" // Explicit hint for LCP
+                fetchPriority="high"
                 quality={80} // Reduced from 90 for performance
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1152px"
               />

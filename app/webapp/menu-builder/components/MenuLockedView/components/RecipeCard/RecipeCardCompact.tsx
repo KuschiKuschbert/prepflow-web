@@ -6,7 +6,12 @@
 
 import { Icon } from '@/components/ui/Icon';
 import { QrCode } from 'lucide-react';
-import { QRCodeSVG } from 'qrcode.react';
+import dynamic from 'next/dynamic';
+
+const QRCodeSVG = dynamic(() => import('qrcode.react').then(m => ({ default: m.QRCodeSVG })), {
+  ssr: false,
+  loading: () => <div className="h-16 w-16 animate-pulse rounded bg-[#2a2a2a]" />,
+});
 
 interface RecipeCardCompactProps {
   id: string;
