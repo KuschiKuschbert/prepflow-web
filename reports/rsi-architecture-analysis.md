@@ -1,9 +1,9 @@
 # 🏗️ RSI Architecture Analysis Report
 
-**Date:** 2/28/2026, 3:27:49 PM
+**Date:** 3/1/2026, 3:28:46 PM
 
 **Detected Design Patterns:** 6
-**Detected Anti-Patterns:** 475
+**Detected Anti-Patterns:** 472
 
 ## ⚠️ Anti-Patterns Detected
 
@@ -315,12 +315,6 @@
 
 ### Magic Numbers (MEDIUM)
 
-**File:** `app/api/employees/route.ts`
-**Description:** Found 12 magic numbers
-**Suggestion:** Extract magic numbers to named constants
-
-### Magic Numbers (MEDIUM)
-
 **File:** `app/api/employees/upload-photo/route.ts`
 **Description:** Found 22 magic numbers
 **Suggestion:** Extract magic numbers to named constants
@@ -627,12 +621,6 @@
 
 ### Magic Numbers (MEDIUM)
 
-**File:** `app/api/roster/templates/route.ts`
-**Description:** Found 12 magic numbers
-**Suggestion:** Extract magic numbers to named constants
-
-### Magic Numbers (MEDIUM)
-
 **File:** `app/api/setup-user-avatar/route.ts`
 **Description:** Found 12 magic numbers
 **Suggestion:** Extract magic numbers to named constants
@@ -658,7 +646,7 @@
 ### Magic Numbers (MEDIUM)
 
 **File:** `app/api/staff/availability/route.ts`
-**Description:** Found 14 magic numbers
+**Description:** Found 12 magic numbers
 **Suggestion:** Extract magic numbers to named constants
 
 ### Magic Numbers (MEDIUM)
@@ -809,12 +797,6 @@
 
 **File:** `app/components/landing/ModernMobileNav.tsx`
 **Description:** Code has 7 levels of nesting
-**Suggestion:** Extract nested logic into separate functions
-
-### Spaghetti Code (HIGH)
-
-**File:** `app/components/landing/TourModal.tsx`
-**Description:** Code has 6 levels of nesting
 **Suggestion:** Extract nested logic into separate functions
 
 ### Magic Numbers (MEDIUM)
@@ -2898,7 +2880,7 @@
 ✅ No circular dependencies found.
 
 🛡️  Checking Client/Server Boundaries...
-Scanning 2759 files for boundaries...
+Scanning 2755 files for boundaries...
 ✅ Client/Server boundaries respected.
 
 📚 Checking Lib vs Components Boundaries...

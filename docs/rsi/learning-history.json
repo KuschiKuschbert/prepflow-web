@@ -844,5 +844,49 @@
       }
     ],
     "astRulesGenerated": []
+  },
+  {
+    "timestamp": "2026-03-01T15:27:08.351Z",
+    "insights": [
+      {
+        "patternId": "lint-fix",
+        "type": "frequency",
+        "confidence": 1,
+        "insight": "Fixes of type 'lint-fix' have a 100.0% success rate across 3 attempts.",
+        "sourceFiles": [
+          "/Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/app/api/ingredients/helpers/updateIngredient.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/app/api/prep-lists/generate-from-menu/route.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/app/webapp/ingredients/hooks/useIngredientAdd.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/app/webapp/ingredients/hooks/useIngredientFiltering.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/app/webapp/menu-builder/components/MenuLockedView/hooks/useMenuItemsWithAllergens/helpers/processMenuItem.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/app/webapp/performance/components/PerformanceDateRange.tsx /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/app/webapp/recipes/components/hooks/useDishesClientPagination/helpers/filterAndSortDishes.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/app/webapp/recipes/components/hooks/useDishesClientPagination/helpers/filterAndSortRecipes.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/app/webapp/recipes/hooks/useDishFiltering.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/lib/populate-helpers/generate-sales-data.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/lib/populate-helpers/index.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/lib/populate-helpers/other-data.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/lib/rsi/auto-refactoring/refactoring-planner.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/lib/square/sync/catalog/helpers/processToSquare.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/lib/square/sync/staff/helpers/processToSquare.ts /Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/scripts/recipe-scraper/utils/recipe-processor.ts",
+          "/Users/danielkuschmierz/Prepflow-Ecosystem/prepflow-web/app/api/allergens/[code]/dishes/route.ts",
+          "/home/runner/work/prepflow-web/prepflow-web/app/api/admin/features/[flag]/controller.ts"
+        ]
+      },
+      {
+        "patternId": "cleanup",
+        "type": "frequency",
+        "confidence": 1,
+        "insight": "Fixes of type 'cleanup' have a 100.0% success rate across 8 attempts.",
+        "sourceFiles": [
+          "lib/rsi/architecture-analysis/index.ts",
+          "lib/rsi/orchestrator.ts",
+          "lib/rsi/rule-evolution/rule-manager.ts",
+          "lib/rsi/rule-evolution/rule-evaluator.ts",
+          "lib/rsi/auto-refactoring/refactoring-planner.ts"
+        ]
+      }
+    ],
+    "rulesGenerated": [
+      {
+        "id": "rule-lint-fix-1772378828326",
+        "description": "Auto-generated rule: Prioritize 'lint-fix' fixes (100% success).",
+        "ruleLogic": "if (issue.type === 'lint-fix') { prioritize(); }",
+        "derivedFrom": ["lint-fix"]
+      },
+      {
+        "id": "rule-cleanup-1772378828326",
+        "description": "Auto-generated rule: Prioritize 'cleanup' fixes (100% success).",
+        "ruleLogic": "if (issue.type === 'cleanup') { prioritize(); }",
+        "derivedFrom": ["cleanup"]
+      }
+    ],
+    "astRulesGenerated": []
   }
 ]
