@@ -5,6 +5,7 @@ import { getCachedData, cacheData } from '@/lib/cache/data-cache';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
+import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 import { Modal } from '@/components/ui/Modal';
 import { useConfirm } from '@/hooks/useConfirm';
 import { format, parseISO } from 'date-fns';
@@ -12,7 +13,6 @@ import {
   Calendar as CalendarIcon,
   CalendarDays,
   ChevronDown,
-  Loader2,
   Plus,
   Search,
   Trash2,
@@ -294,13 +294,7 @@ export default function FunctionsPage() {
 
           {/* Functions table */}
           {isLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <Icon
-                icon={Loader2}
-                size="md"
-                className="animate-spin text-[var(--foreground-muted)]"
-              />
-            </div>
+            <LoadingSkeleton variant="table" />
           ) : filteredFunctions.length === 0 ? (
             <Card>
               <div className="flex flex-col items-center justify-center py-16 text-center">

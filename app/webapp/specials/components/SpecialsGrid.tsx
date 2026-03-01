@@ -1,5 +1,7 @@
 'use client';
 
+import { Icon } from '@/components/ui/Icon';
+import { ChefHat } from 'lucide-react';
 import React from 'react';
 import { APIRecipe } from '../utils';
 import { RecipeCard } from './RecipeCard';
@@ -76,7 +78,9 @@ export function SpecialsGrid({
   // Empty State
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center">
-      <div className="mb-4 rounded-full bg-white/5 p-4 text-4xl">👨‍🍳</div>
+      <div className="mb-4 rounded-full bg-white/5 p-4">
+        <Icon icon={ChefHat} size="xl" className="text-[var(--primary)]" aria-hidden />
+      </div>
       <p className="text-xl font-medium text-white/60">Our chefs are stumped!</p>
       <p className="mt-2 max-w-sm text-sm text-white/40">
         We couldn&apos;t find any recipes matching your criteria. Try loosening the &quot;Strict

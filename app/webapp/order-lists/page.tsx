@@ -5,7 +5,7 @@ import { LoadingSkeleton, PageSkeleton } from '@/components/ui/LoadingSkeleton';
 import { ResponsivePageContainer } from '@/components/ui/ResponsivePageContainer';
 import { cacheData, getCachedData, prefetchApi } from '@/lib/cache/data-cache';
 import { logger } from '@/lib/logger';
-import { ClipboardCheck } from 'lucide-react';
+import { ClipboardCheck, Plus } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { PageTipsCard } from '@/components/ui/PageTipsCard';
@@ -284,6 +284,12 @@ export default function OrderListsPage() {
             <p className="mb-6 text-[var(--foreground-muted)]">
               Create a menu in Menu Builder to generate order lists
             </p>
+            <a
+              href="/webapp/menu-builder"
+              className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#29E7CD] to-[#D925C7] px-6 py-3 font-semibold text-white shadow-lg transition-all hover:shadow-xl"
+            >
+              <Icon icon={Plus} size="sm" aria-hidden /> Open Menu Builder
+            </a>
           </div>
         ) : (
           <div className="py-12 text-center">

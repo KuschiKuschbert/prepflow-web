@@ -1,15 +1,35 @@
 /**
  * Hidden feature flags module.
- * This module provides access to unlockable features that require admin access or special flags.
- * Currently empty - will be implemented when needed.
+ * Checks the hidden_feature_flags table in Supabase to determine
+ * whether a feature is unlocked and enabled for a given user.
  */
 
+import { createSupabaseAdmin } from '@/lib/supabase';
+import { logger } from '@/lib/logger';
+
 export async function isHiddenFeatureEnabled(
-  _featureKey: string,
-  _userEmail?: string,
+  featureKey: string,
+  userEmail?: string,
 ): Promise<boolean> {
-  // TODO: Implement hidden feature flag checking
-  // This should check the hidden_feature_flags table in Supabase
-  // and verify if the feature is unlocked and enabled for the user
-  return false;
+  try {
+    const supabase = createSupabaseAdmin();
+    const { data, error } = await supabase
+      .from('hidden_feature_flags')
+      .select('enabled')
+      .eq('feature_key', featureKey)
+      .eq('user_email', userEmail ?? '')
+      .maybeSingle();
+
+    if (error) {
+      logger.warn('[hidden-feature-flags] Query failed, defaulting to false', {
+        featureKey,
+        error: error.message,
+      });
+      return false;
+    }
+
+    return data?.enabled === true;
+  } catch {
+    return false;
+  }
 }

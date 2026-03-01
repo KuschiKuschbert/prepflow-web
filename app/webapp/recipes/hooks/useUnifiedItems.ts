@@ -1,6 +1,8 @@
 'use client';
 
 import { logger } from '@/lib/logger';
+import type { Dish } from '@/lib/types/recipes/dish';
+import type { Recipe } from '@/lib/types/recipes/recipe';
 import { UnifiedItem } from '@/lib/types/recipes';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -36,16 +38,14 @@ export function useUnifiedItems(): UseUnifiedItemsReturn {
         return;
       }
 
-      // Convert recipes to unified items (catalog fields are a subset of Recipe)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const recipeItems: UnifiedItem[] = (recipesResult.recipes || []).map((recipe: any) => ({
-        ...recipe,
-        itemType: 'recipe' as const,
-      }));
+      const recipeItems: UnifiedItem[] = ((recipesResult.recipes || []) as Recipe[]).map(
+        recipe => ({
+          ...recipe,
+          itemType: 'recipe' as const,
+        }),
+      );
 
-      // Convert dishes to unified items (catalog fields are a subset of Dish)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const dishItems: UnifiedItem[] = (dishesResult.dishes || []).map((dish: any) => ({
+      const dishItems: UnifiedItem[] = ((dishesResult.dishes || []) as Dish[]).map(dish => ({
         ...dish,
         itemType: 'dish' as const,
       }));

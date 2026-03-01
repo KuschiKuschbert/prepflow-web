@@ -116,7 +116,7 @@ npm run pre-deploy
 
 ### **GitHub Actions CI Workflow**
 
-**File:** `.github/workflows/ci.yml`
+**File:** `.github/workflows/ci-cd.yml`
 
 **Triggers:**
 - Pull requests to `main`

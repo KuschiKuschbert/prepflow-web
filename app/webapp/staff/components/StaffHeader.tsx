@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
-import { Users } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
 
 interface StaffHeaderProps {
   selectedStatus: 'all' | 'active' | 'inactive' | 'terminated';
@@ -47,7 +47,7 @@ export function StaffHeader({ selectedStatus, onStatusChange, onAddStaff }: Staf
           size="sm"
           className="shadow-lg hover:shadow-xl"
         >
-          ➕ Add Staff Member
+          <Icon icon={Plus} size="sm" aria-hidden /> Add Staff Member
         </Button>
       </div>
     </>

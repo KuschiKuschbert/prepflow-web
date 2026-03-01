@@ -2,7 +2,7 @@
 
 import { Icon } from '@/components/ui/Icon';
 import { Check } from 'lucide-react';
-import QRCodeSVG from 'react-qr-code';
+import { QRCodeSVG } from 'qrcode.react';
 import type { QRCodeEntity } from '../types';
 
 interface QRCodeCardProps {

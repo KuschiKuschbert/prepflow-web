@@ -1,7 +1,9 @@
 'use client';
 
+import { Icon } from '@/components/ui/Icon';
 import { PageSkeleton } from '@/components/ui/LoadingSkeleton';
 import type { Employee, QualificationType } from '@/lib/types/roster';
+import { UserPlus, Users } from 'lucide-react';
 import { StaffCard } from './StaffCard';
 
 interface StaffListProps {
@@ -9,37 +11,39 @@ interface StaffListProps {
   qualificationTypes: QualificationType[];
   onDelete: (id: string) => void;
   loading: boolean;
+  totalCount?: number;
 }
 
-export function StaffList({ staff, qualificationTypes, onDelete, loading }: StaffListProps) {
+export function StaffList({
+  staff,
+  qualificationTypes,
+  onDelete,
+  loading,
+  totalCount = 0,
+}: StaffListProps) {
   if (loading) {
     return <PageSkeleton />;
   }
 
   if (staff.length === 0) {
+    const isFilteredEmpty = totalCount > 0;
     return (
       <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-12 text-center shadow-lg">
         <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)]/20 to-[var(--primary)]/10">
-          <svg
-            className="h-12 w-12 text-[var(--primary)]"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-            />
-          </svg>
+          <Icon
+            icon={isFilteredEmpty ? Users : UserPlus}
+            size="xl"
+            className="text-[var(--primary)]"
+            aria-hidden
+          />
         </div>
         <h3 className="text-fluid-xl tablet:text-fluid-2xl mb-2 font-bold text-[var(--foreground)]">
-          No Staff Found
+          {isFilteredEmpty ? 'No Matches' : 'No Team Members Yet'}
         </h3>
         <p className="mx-auto max-w-xs text-[var(--foreground-muted)]">
-          No team members match the selected filters. Try adjusting your status filter or adding a
-          new member.
+          {isFilteredEmpty
+            ? 'No team members match the selected filters. Try adjusting your status filter.'
+            : 'Add your first team member to start building your roster and tracking qualifications.'}
         </p>
       </div>
     );

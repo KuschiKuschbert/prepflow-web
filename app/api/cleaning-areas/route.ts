@@ -57,11 +57,22 @@ export async function GET(request: NextRequest) {
   try {
     const { userId, supabase } = await getAuthenticatedUser(request);
 
-    const { data, error: dbError } = await supabase
+    const searchParams = request.nextUrl.searchParams;
+    const page = Math.max(1, Number(searchParams.get('page')) || 1);
+    const pageSize = Math.min(100, Math.max(1, Number(searchParams.get('pageSize')) || 50));
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    const {
+      data,
+      error: dbError,
+      count,
+    } = await supabase
       .from('cleaning_areas')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('user_id', userId)
-      .order('area_name');
+      .order('area_name')
+      .range(from, to);
 
     if (dbError) {
       logger.error('[Cleaning Areas API] Database error fetching areas:', {
@@ -77,6 +88,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: data || [],
+      pagination: {
+        page,
+        pageSize,
+        total: count ?? 0,
+        totalPages: Math.ceil((count ?? 0) / pageSize),
+      },
     });
   } catch (err) {
     if (err instanceof NextResponse) return err;

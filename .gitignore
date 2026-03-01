@@ -158,3 +158,9 @@ performance-reports/
 .lighthouseci/
 .vercel
 .env*.local
+test-supabase.js
+
+# Generated reports (local only)
+AUDIT_REPORT.md
+SIMULATION_REPORT_*.md
+TEST_EXECUTION_REPORT.md

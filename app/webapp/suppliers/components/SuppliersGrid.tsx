@@ -11,6 +11,25 @@ interface SuppliersGridProps {
 export function SuppliersGrid({ suppliers }: SuppliersGridProps) {
   const { t } = useTranslation();
 
+  if (suppliers.length === 0) {
+    return (
+      <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-12 text-center shadow-lg">
+        <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)]/20 to-[var(--primary)]/10">
+          <Icon icon={Truck} size="xl" className="text-[var(--primary)]" aria-hidden />
+        </div>
+        <h3 className="text-fluid-xl tablet:text-fluid-2xl mb-2 font-bold text-[var(--foreground)]">
+          {t('suppliers.noSuppliers', 'No Suppliers Yet')}
+        </h3>
+        <p className="mx-auto max-w-xs text-[var(--foreground-muted)]">
+          {t(
+            'suppliers.addFirstSupplier',
+            "Add your first supplier to start tracking where you buy ingredients. Hit the 'Add Supplier' button above to get started.",
+          )}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="adaptive-grid">
       {suppliers.map(supplier => (

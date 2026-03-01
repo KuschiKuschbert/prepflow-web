@@ -54,7 +54,7 @@
 - **googleapis:** ^171.2.0 (Google Drive backup)
 - **Resend** (email, via API key — no SDK package)
 - **Puppeteer Core:** ^24.37.2 + **@sparticuz/chromium:** ^143.0.4 (PDF generation)
-- **QRCode:** ^1.5.4, **qrcode.react:** ^4.2.0, **react-qr-code:** ^2.0.18
+- **QRCode:** ^1.5.4, **qrcode.react:** ^4.2.0
 
 ## Data Processing
 

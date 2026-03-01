@@ -6,6 +6,7 @@
 'use client';
 
 import { PageSkeleton } from '@/components/ui/LoadingSkeleton';
+import { PageTipsCard } from '@/components/ui/PageTipsCard';
 import { PrintButton } from '@/components/ui/PrintButton';
 import { ExportButton } from '@/components/ui/ExportButton';
 import { GuideNavigation } from './components/GuideNavigation';
@@ -16,6 +17,7 @@ import { printWithTemplate } from '@/lib/exports/print-template';
 import { exportHTMLReport } from '@/lib/exports/export-html';
 import { getGuideById } from './data/guides';
 import type { Guide } from './data/guide-types';
+import { PAGE_TIPS_CONFIG } from '@/lib/page-help/page-tips-content';
 import { useGuideAnalytics } from './hooks/useGuideAnalytics';
 import { useGuideNavigation } from './hooks/useGuideNavigation';
 import { useGuideProgress } from './hooks/useGuideProgress';
@@ -153,6 +155,11 @@ function GuidePageContent() {
         {!currentGuide ? (
           // Guide selection view
           <div className="space-y-8">
+            {PAGE_TIPS_CONFIG.guide && (
+              <div className="mb-6">
+                <PageTipsCard config={PAGE_TIPS_CONFIG.guide} />
+              </div>
+            )}
             <div className="space-y-2">
               <h1 className="text-fluid-3xl font-bold text-[var(--foreground)]">PrepFlow Guides</h1>
               <p className="text-fluid-base text-[var(--foreground-muted)]">

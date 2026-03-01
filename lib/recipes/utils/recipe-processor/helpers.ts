@@ -32,7 +32,7 @@ export async function generateTextWithOllama(
 ): Promise<{ response: string }> {
   const model = options.model || 'llama3.2:3b';
   const timeout = options.timeout || 90000;
-  const apiUrl = 'http://localhost:11434/api/generate';
+  const apiUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434/api/generate';
   const systemPrompt =
     'You are a precise recipe formatter. Always respond with valid JSON only, no markdown, no explanations. Follow all conversion rules strictly.\n\n';
   const enhancedPrompt = systemPrompt + prompt;
