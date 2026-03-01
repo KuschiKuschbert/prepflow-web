@@ -445,3 +445,17 @@ test-exclude 7.x uses minimatch ^10.2.2 and is compatible with babel-plugin-ista
 **Derived Rule:** Ensure all required Auth0 secrets are propagated to CI/CD steps running the application.
 
 ---
+
+## Auth0 SDK.\*Configuration validation failed (ConfigurationError-Runtime)
+
+**Symptom:** Auth0 SDK.\*Configuration validation failed
+
+**Root Cause:** file: server.js; environment: CI
+
+**Fix:**
+
+1. Add AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_BASE_URL, AUTH0_ISSUER_BASE_URL, and AUTH0_SECRET to the environment variables of the running process.
+
+**Derived Rule:** Ensure all required Auth0 secrets are propagated to CI/CD steps running the application.
+
+---
