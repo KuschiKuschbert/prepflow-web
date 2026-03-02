@@ -206,7 +206,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/canvas-confetti": "^1.9.0",
-    "@types/glob": "^8.1.0",
+    "@types/glob": "^9.0.0",
     "@types/jest": "^30.0.0",
     "@types/jscodeshift": "^17.3.0",
     "@types/madge": "^5.0.3",
