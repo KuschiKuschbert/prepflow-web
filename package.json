@@ -210,7 +210,7 @@
     "@types/jest": "^30.0.0",
     "@types/jscodeshift": "^17.3.0",
     "@types/madge": "^5.0.3",
-    "@types/node": "^25.2.0",
+    "@types/node": "^25.3.3",
     "@types/papaparse": "^5.3.15",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.14",
